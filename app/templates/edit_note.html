@@ -1,10 +1,36 @@
-<form method="POST">
-    {{ form.hidden_tag() }}
-    <div>
-        {{ form.title.label }} {{ form.title(size=20) }}
-    </div>
-    <div>
-        {{ form.content.label }} {{ form.content(rows=5, cols=20) }}
-    </div>
-    <button type="submit">Update Note</button>
-</form>
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="auth-container">
+    <h2 class="mb-4">Edit Note</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ form.title.label(class="form-label") }}
+            {{ form.title(class="form-control") }}
+            {% if form.title.errors %}
+                <div class="text-danger">
+                    {% for error in form.title.errors %}
+                        <small>{{ error }}</small>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.content.label(class="form-label") }}
+            {{ form.content(class="form-control", rows=8) }}
+            {% if form.content.errors %}
+                <div class="text-danger">
+                    {% for error in form.content.errors %}
+                        <small>{{ error }}</small>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+            <a href="{{ url_for('main.get_notes') }}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Update Note</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
