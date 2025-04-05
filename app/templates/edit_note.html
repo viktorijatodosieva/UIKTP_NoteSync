@@ -1,0 +1,10 @@
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div>
+        {{ form.title.label }} {{ form.title(size=20) }}
+    </div>
+    <div>
+        {{ form.content.label }} {{ form.content(rows=5, cols=20) }}
+    </div>
+    <button type="submit">Update Note</button>
+</form>

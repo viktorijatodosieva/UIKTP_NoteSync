@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Welcome to your Dashboard, {{ current_user.username }}!</h1>
+    <a href="{{ url_for('main.get_notes') }}" class="btn btn-primary">My Notes</a>
+{% endblock %}

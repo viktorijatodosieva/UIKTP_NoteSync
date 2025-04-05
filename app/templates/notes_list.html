@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>My Notes</h1>
+
+    {% if notes %}
+        <div class="row">
+            {% for note in notes %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ note.title }}</h5>
+                            <p class="card-text">{{ note.content[:100] }}...</p>
+                            <a href="{{ url_for('main.edit_note', id=note.id) }}" class="btn btn-primary">Edit</a>
+                            <a href="{{ url_for('main.delete_note', id=note.id) }}" class="btn btn-danger">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>You have no notes yet.</p>
+    {% endif %}
+
+    <a href="{{ url_for('main.create_note') }}" class="btn btn-success">+New Note</a>
+{% endblock %}
