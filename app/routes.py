@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt
 from .models import db, User, Note, UserHasAccessNote
-from .forms import RegistrationForm, LoginForm, NoteForm  # Import your forms
+from .forms import RegistrationForm, LoginForm, NoteForm, ShareNoteForm  # Import your forms
 from .extensions import bcrypt
 from datetime import datetime
 
@@ -140,6 +140,34 @@ def edit_note(id):
     form.title.data = note.title
     form.content.data = note.content
     return render_template('edit_note.html', form=form, note=note)
+
+
+@main_bp.route('/note/share/<int:id>', methods=['GET', 'POST'])
+@login_required
+def share_note(id):
+    note = Note.query.get_or_404(id)
+    form = ShareNoteForm()
+
+    if form.validate_on_submit():
+        username = form.user.data
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            flash(f'User "{username}" does not exist.', 'danger')
+            return redirect(request.referrer)
+
+        already_shared = UserHasAccessNote.query.filter_by(user_id=user.id, note_id=note.id).first()
+        if already_shared:
+            flash(f'Note already shared with {username}', 'warning')
+            return redirect(request.referrer)
+
+        access = UserHasAccessNote(user_id=user.id, note_id=note.id, shared_by=current_user.id)
+        note.shared_with.append(access)
+
+        db.session.commit()
+        flash(f'Note shared with {username}', 'success')
+        return redirect(request.referrer)
+
+    return render_template('share_note.html', form=form, note=note)
 
 
 @main_bp.route('/note/<int:id>', methods=['GET'])

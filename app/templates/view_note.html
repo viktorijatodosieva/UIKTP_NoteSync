@@ -12,9 +12,7 @@
     </small>
 
     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-        <a href="{{ url_for('main.share_note') }}" class="btn btn-secondary">Share Note</a>
-    </div>
-    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <a href="{{ url_for('main.share_note', id=note.id) }}" class="btn btn-secondary">Share Note</a>
         <a href="{{ url_for('main.get_notes') }}" class="btn btn-secondary">Back to Notes</a>
     </div>
 {% endblock %}

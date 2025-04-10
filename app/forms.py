@@ -15,3 +15,6 @@ class LoginForm(FlaskForm):
 class NoteForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     content = TextAreaField('Content', validators=[DataRequired()])
+
+class ShareNoteForm(FlaskForm):
+    user = StringField('User', validators=[DataRequired()])
