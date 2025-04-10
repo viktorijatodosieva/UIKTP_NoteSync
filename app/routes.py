@@ -1,11 +1,10 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt
-from .models import db, User, Note
+from .models import db, User, Note, UserHasAccessNote
 from .forms import RegistrationForm, LoginForm, NoteForm  # Import your forms
 from .extensions import bcrypt
 from datetime import datetime
-
 
 main_bp = Blueprint('main', __name__)
 auth_bp = Blueprint('auth', __name__)
@@ -14,6 +13,7 @@ auth_bp = Blueprint('auth', __name__)
 @main_bp.route('/')
 def index():
     return "App successfully created."
+
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -26,7 +26,6 @@ def register():
         username = form.username.data
         email = form.email.data
         password = form.password.data
-
 
         if User.query.filter_by(username=username).first():
             flash('Username already taken', 'danger')
@@ -46,6 +45,7 @@ def register():
             return redirect(url_for('auth.login'))
 
     return render_template('auth/register.html', form=form)  # Pass form to template
+
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -80,13 +80,11 @@ def logout():
     return redirect(url_for('auth.login'))
 
 
-
 @main_bp.route('/dashboard')
 @login_required
 def dashboard():
     notes = Note.query.filter_by(created_by=current_user.id).all()
     return render_template('dashboard.html', notes=notes)
-
 
 
 @main_bp.route('/create', methods=['GET', 'POST'])
@@ -106,12 +104,23 @@ def create_note():
     return render_template('create_note.html', form=form)
 
 
-
 @main_bp.route('/notes')
 @login_required
 def get_notes():
     notes = Note.query.filter_by(created_by=current_user.id).all()
     return render_template('notes_list.html', notes=notes)
+
+
+@main_bp.route('/notes/shared-with-me')
+@login_required
+def get_shared_notes():
+    notes = (
+        db.session.query(Note)
+        .join(UserHasAccessNote)
+        .filter(UserHasAccessNote.user_id == current_user.id)
+        .all()
+    )
+    return render_template('shared_notes_list.html', notes=notes)
 
 
 @main_bp.route('/note/edit/<int:id>', methods=['GET', 'POST'])
@@ -133,6 +142,13 @@ def edit_note(id):
     return render_template('edit_note.html', form=form, note=note)
 
 
+@main_bp.route('/note/<int:id>', methods=['GET'])
+@login_required
+def view_note(id):
+    note = Note.query.get_or_404(id)
+    return render_template('view_note.html', note=note)
+
+
 @main_bp.route('/note/delete/<int:id>', methods=['GET', 'POST'])
 @login_required
 def delete_note(id):
@@ -145,9 +161,3 @@ def delete_note(id):
         return redirect(url_for('main.dashboard'))
 
     return render_template('delete_note.html', note=note)
-
-
-
-
-
-
