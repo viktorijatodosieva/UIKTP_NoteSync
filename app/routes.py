@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt
 from .models import db, User, Note, UserHasAccessNote
 from .forms import RegistrationForm, LoginForm, NoteForm, ShareNoteForm  # Import your forms
 from .extensions import bcrypt
+from .middleware import creator_or_shared_required, creator_required
 from datetime import datetime
 
 main_bp = Blueprint('main', __name__)
@@ -125,6 +126,7 @@ def get_shared_notes():
 
 @main_bp.route('/note/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
+@creator_or_shared_required
 def edit_note(id):
     note = Note.query.get_or_404(id)
     form = NoteForm()
@@ -144,6 +146,7 @@ def edit_note(id):
 
 @main_bp.route('/note/share/<int:id>', methods=['GET', 'POST'])
 @login_required
+@creator_or_shared_required
 def share_note(id):
     note = Note.query.get_or_404(id)
     form = ShareNoteForm()
@@ -156,7 +159,8 @@ def share_note(id):
             return redirect(request.referrer)
 
         already_shared = UserHasAccessNote.query.filter_by(user_id=user.id, note_id=note.id).first()
-        if already_shared:
+        creator = Note.query.filter_by(created_by=current_user.id).first()
+        if already_shared or creator:
             flash(f'Note already shared with {username}', 'warning')
             return redirect(request.referrer)
 
@@ -172,13 +176,16 @@ def share_note(id):
 
 @main_bp.route('/note/<int:id>', methods=['GET'])
 @login_required
+@creator_or_shared_required
 def view_note(id):
     note = Note.query.get_or_404(id)
+
     return render_template('view_note.html', note=note)
 
 
 @main_bp.route('/note/delete/<int:id>', methods=['GET', 'POST'])
 @login_required
+@creator_required
 def delete_note(id):
     note = Note.query.get_or_404(id)
 
