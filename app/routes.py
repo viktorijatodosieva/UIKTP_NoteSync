@@ -12,8 +12,10 @@ auth_bp = Blueprint('auth', __name__)
 
 
 @main_bp.route('/')
+@login_required
 def index():
-    return "App successfully created."
+    notes = Note.query.filter_by(created_by=current_user.id).all()
+    return render_template('dashboard.html', notes=notes)
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
@@ -81,13 +83,6 @@ def logout():
     return redirect(url_for('auth.login'))
 
 
-@main_bp.route('/dashboard')
-@login_required
-def dashboard():
-    notes = Note.query.filter_by(created_by=current_user.id).all()
-    return render_template('dashboard.html', notes=notes)
-
-
 @main_bp.route('/create', methods=['GET', 'POST'])
 @login_required
 def create_note():
@@ -101,7 +96,7 @@ def create_note():
         db.session.add(new_note)
         db.session.commit()
         flash('Note created successfully!', 'success')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('main.index'))
     return render_template('create_note.html', form=form)
 
 
@@ -137,7 +132,7 @@ def edit_note(id):
         note.updated_at = datetime.utcnow()
         db.session.commit()
         flash('Note updated successfully!', 'success')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('main.index'))
 
     form.title.data = note.title
     form.content.data = note.content
@@ -193,6 +188,6 @@ def delete_note(id):
         db.session.delete(note)
         db.session.commit()
         flash('Note deleted successfully!', 'success')
-        return redirect(url_for('main.dashboard'))
+        return redirect(url_for('main.index'))
 
     return render_template('delete_note.html', note=note)
