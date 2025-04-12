@@ -27,6 +27,7 @@ def register():
 
     if form.validate_on_submit():
         username = form.username.data
+        name = form.name.data
         email = form.email.data
         password = form.password.data
 
@@ -35,11 +36,10 @@ def register():
         elif User.query.filter_by(email=email).first():
             flash('Email already registered', 'danger')
         else:
-
             user = User(
+                name=name,
                 username=username,
                 email=email,
-                name=username
             )
             user.set_password(password)
             db.session.add(user)
