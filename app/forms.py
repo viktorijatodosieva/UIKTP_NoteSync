@@ -17,5 +17,5 @@ class NoteForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     content = TextAreaField('Content')
     image = FileField('Image Upload', validators=[
-        FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')
+        FileAllowed(['jpg', 'png', 'jpeg'], 'Images (JPG/PNG) only!')
     ])
