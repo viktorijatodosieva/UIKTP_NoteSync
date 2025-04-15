@@ -6,7 +6,7 @@ import numpy as np
 class OCRService:
     def __init__(self):
 
-        self.reader = easyocr.Reader(['en', 'mk'])
+        self.reader = easyocr.Reader(['en'])
 
     def extract_text(self, image_file):
 
