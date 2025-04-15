@@ -7,6 +7,10 @@ from .extensions import bcrypt
 from datetime import datetime
 
 
+from .services.ocr_service import OCRService
+
+ocr_service = OCRService()
+
 main_bp = Blueprint('main', __name__)
 auth_bp = Blueprint('auth', __name__)
 
@@ -45,7 +49,7 @@ def register():
             flash('Registration successful! Please login.', 'success')
             return redirect(url_for('auth.login'))
 
-    return render_template('auth/register.html', form=form)  # Pass form to template
+    return render_template('auth/register.html', form=form)
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -69,7 +73,7 @@ def login():
 
         flash('Invalid username or password', 'danger')
 
-    return render_template('auth/login.html', form=form)  # Pass form to template
+    return render_template('auth/login.html', form=form)
 
 
 @auth_bp.route('/logout')
@@ -92,17 +96,38 @@ def dashboard():
 @main_bp.route('/create', methods=['GET', 'POST'])
 @login_required
 def create_note():
+    # form = NoteForm()
+    # if form.validate_on_submit():
+    #     new_note = Note(
+    #         title=form.title.data,
+    #         content=form.content.data,
+    #         created_by=current_user.id
+    #     )
+    #     db.session.add(new_note)
+    #     db.session.commit()
+    #     flash('Note created successfully!', 'success')
+    #     return redirect(url_for('main.dashboard'))
+    # return render_template('create_note.html', form=form)
     form = NoteForm()
     if form.validate_on_submit():
+        content = form.content.data
+
+
+        if form.image.data:
+            extracted_text = ocr_service.extract_text(form.image.data)
+            if extracted_text:
+                content = extracted_text
+
         new_note = Note(
             title=form.title.data,
-            content=form.content.data,
+            content=content,
             created_by=current_user.id
         )
         db.session.add(new_note)
         db.session.commit()
-        flash('Note created successfully!', 'success')
+        flash('Note created!', 'success')
         return redirect(url_for('main.dashboard'))
+
     return render_template('create_note.html', form=form)
 
 
