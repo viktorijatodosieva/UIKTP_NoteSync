@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1 class="mb-4">{{ note.title }}</h1>
+
+    <div class="mb-4">
+        {{ note.content }}
+    </div>
+
+    <small class="text-muted">
+        Created on {{ note.created_at.strftime('%Y-%m-%d %H:%M') }} | Last updated {{ note.updated_at.strftime('%Y-%m-%d %H:%M') }}
+    </small>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <a href="{{ url_for('main.share_note', id=note.id) }}" class="btn btn-secondary">Share Note</a>
+        <a href="{{ url_for('main.get_notes') }}" class="btn btn-secondary">Back to Notes</a>
+    </div>
+{% endblock %}

@@ -4,6 +4,7 @@ from wtforms.validators import DataRequired, Email, Length
 from flask_wtf.file import FileField, FileAllowed
 
 class RegistrationForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
     username = StringField('Username', validators=[DataRequired(), Length(min=4, max=25)])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
@@ -19,3 +20,6 @@ class NoteForm(FlaskForm):
     image = FileField('Image Upload', validators=[
         FileAllowed(['jpg', 'png', 'jpeg'], 'Images (JPG/PNG) only!')
     ])
+
+class ShareNoteForm(FlaskForm):
+    user = StringField('User', validators=[DataRequired()])
