@@ -180,7 +180,7 @@ def share_note(id):
             return redirect(request.referrer)
 
         already_shared = UserHasAccessNote.query.filter_by(user_id=user.id, note_id=note.id).first()
-        creator = Note.query.filter_by(created_by=current_user.id).first()
+        creator = note.created_by == current_user.id
         if already_shared or creator:
             flash(f'Note already shared with {username}', 'warning')
             return redirect(request.referrer)
