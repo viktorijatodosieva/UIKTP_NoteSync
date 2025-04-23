@@ -106,11 +106,10 @@ def create_note():
     if form.validate_on_submit():
         content = form.content.data
 
-
         if form.image.data:
             extracted_text = ocr_service.extract_text(form.image.data)
             if extracted_text:
-                content = extracted_text
+                content = content + '\n' + extracted_text
 
         new_note = Note(
             title=form.title.data,
@@ -120,7 +119,10 @@ def create_note():
         db.session.add(new_note)
         db.session.commit()
         flash('Note created successfully!', 'success')
+        if form.image.data:
+            return redirect(url_for('main.edit_note', id=new_note.id))
         return redirect(url_for('main.index'))
+
     return render_template('create_note.html', form=form)
 
 

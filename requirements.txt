@@ -6,3 +6,6 @@ Flask-Login~=0.6.3
 alembic~=1.15.2
 SQLAlchemy~=2.0.40
 WTForms~=3.2.1
+easyocr~=1.7.2
+numpy~=2.2.5
+opencv-python
