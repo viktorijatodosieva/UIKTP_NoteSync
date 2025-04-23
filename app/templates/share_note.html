@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="auth-container">
+    <h2 class="mb-4">Share Note</h2>
+    <h5 class="mb-4">Sharing {{ note.title }}</h5>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ form.user.label(class="form-label") }}
+            {{ form.user(class="form-control") }}
+            {% if form.user.errors %}
+                <div class="text-danger">
+                    {% for error in form.user.errors %}
+                        <small>{{ error }}</small>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+            <a href="{{ url_for('main.view_note', id=note.id) }}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Share Note</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -48,7 +48,13 @@
                                 <span class="navbar-text me-3">Hello, {{ current_user.name }}!</span>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('main.dashboard') }}">Dashboard</a>
+                                <a class="nav-link" href="{{ url_for('main.index') }}">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.get_notes') }}">My Notes</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('main.get_shared_notes') }}">Shared with me</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
