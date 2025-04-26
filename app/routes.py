@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt
-from .models import db, User, Note, UserHasAccessNote
+from .models import db, User, Note, UserHasAccessNote, Tag
 from .forms import RegistrationForm, LoginForm, NoteForm, ShareNoteForm  # Import your forms
 from .extensions import bcrypt
 from .middleware import creator_or_shared_required, creator_required
@@ -241,3 +241,27 @@ def delete_note(id):
         return redirect(url_for('main.index'))
 
     return render_template('delete_note.html', note=note)
+
+@main_bp.route('/note/<int:id>/add_tag', methods=['POST'])
+def add_tag_to_note(id):
+    note = Note.query.get_or_404(id)
+    tag_input = request.form.get('tag')  # can be topic.id or new string
+
+    # Try to interpret as existing topic ID
+    tag = None
+    if tag_input.isdigit():
+        tag = Tag.query.get(int(tag_input))
+    else:
+        # Check if topic already exists with that name (prevent duplicates)
+        tag = Tag.query.filter_by(name=tag_input).first()
+        if not tag:
+            tag = Tag(name=tag_input)
+            db.session.add(tag)
+            db.session.commit()
+
+    if tag not in note.tags:
+        note.topics.append(tag)
+        db.session.commit()
+
+    flash('Topic added to note!', 'success')
+    return redirect(url_for('main.view_note', id=note.id))
