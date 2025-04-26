@@ -79,8 +79,7 @@ class Tag(db.Model):
     __tablename__ = 'tag'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(50), unique=True, nullable=False)
-    description = db.Column(db.Text)
+    name = db.Column(db.String(50), nullable=False)
     created_by = db.Column(db.Integer, db.ForeignKey('user.id'))
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
@@ -107,7 +106,6 @@ class NoteBelongsToTag(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     note_id = db.Column(db.Integer, db.ForeignKey('note.id'))
     tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'))
-    is_private = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     note = db.relationship('Note', back_populates='note_tags')
