@@ -39,11 +39,13 @@
         </div>
     </div>
     <div id="noteContentWrapper">
-        {{ note.content }}
+        {{ note.content | safe }}
         <div id="shareNoteBtn">
             <a href="{{ url_for('main.share_note', id=note.id) }}">Share note</a>
         </div>
     </div>
 {% endblock %}
+<script>
+</script>
 </body>
 </html>
