@@ -1,14 +1,39 @@
-{% extends 'base.html' %}
+{#{% extends 'base.html' %}#}
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NoteSync{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/header.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/share.css') }}">
+
+</head>
+<body>
+<div id='headerWrapper'>
+         <div id='headerLeft'>
+            <img id='logoImg' src="{{ url_for('static',filename='images/logo.png') }}" alt='logo img'/>
+            <a href="{{ url_for('main.get_notes') }}"><div id='headerTitle'>NoteSync</div></a>>
+            <div id='myNotes'><a href="{{ url_for('main.get_notes') }}">My Notes</a></div>
+             <div id='sharedNotes'><a href="{{ url_for('main.get_shared_notes') }}">Shared with me</a></div>
+         </div>
+         <div id='headerRight'>
+             <div>Hello, {{ current_user.name }}</div>
+            <img id='notiImg' src="{{ url_for('static',filename='images/noti.png') }}" alt='noti img'/>
+            <a id="headerButton" class="nav-link" href="{{ url_for('auth.logout') }}">Log out</a>
+         </div>
+      </div>
 {% block content %}
-<div class="auth-container">
-    <h2 class="mb-4">Share Note</h2>
-    <h5 class="mb-4">Sharing {{ note.title }}</h5>
+<div id="formWrapper" class="auth-container">
+    <div id="formMsg" >Share Note</div>
+    <div id="sharingTitle">Sharing: {{ note.title }}</div>
     <form method="POST">
         {{ form.hidden_tag() }}
         <div class="mb-3">
-            {{ form.user.label(class="form-label") }}
-            {{ form.user(class="form-control") }}
+            {#{{ form.user.label(class="form-label") }}#}
+            <div>Share this note with:</div>
+            {{ form.user(class="form-control formInput",placeholder="Enter a username") }}
             {% if form.user.errors %}
                 <div class="text-danger">
                     {% for error in form.user.errors %}
@@ -17,10 +42,12 @@
                 </div>
             {% endif %}
         </div>
-        <div class="d-grid gap-2 d-md-flex justify-content-md-between">
-            <a href="{{ url_for('main.view_note', id=note.id) }}" class="btn btn-secondary">Cancel</a>
-            <button type="submit" class="btn btn-primary">Share Note</button>
+        <div id="bottomRow" class="d-grid gap-2 d-md-flex justify-content-md-between">
+            <a id="cancelBtn" href="{{ url_for('main.view_note', id=note.id) }}" class="btn btn-secondary">Cancel</a>
+            <button id="saveBtn" type="submit" class="btn btn-primary">Share Note</button>
         </div>
     </form>
 </div>
 {% endblock %}
+</body>
+</html>

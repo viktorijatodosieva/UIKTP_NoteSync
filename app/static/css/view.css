@@ -1,0 +1,78 @@
+#topRow{
+    height: 100px;
+    margin: 0 10%;
+    width: 80%;
+    display: flex;
+    justify-content: space-between;
+}
+#noteTitleWrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+#noteTitle{
+    font-size:30px;
+    font-weight: 600;
+}
+#backArrowImg{
+    width: 20px;
+    height: 20px;
+    margin-top: 5px;
+}
+a{
+    text-decoration: none;
+}
+#noteBtnWrapper{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 20px;
+}
+#editBtn{
+    width: 100px;
+    background-color: #2563EB;
+    height: 40px;
+    color: white;
+    border-radius: 8px;
+    text-align: center;
+    line-height: 40px;
+}
+#deleteBtn{
+    width: 100px;
+    background-color: #DC2626;
+    height: 40px;
+    color: white;
+    border-radius: 8px;
+    text-align: center;
+    line-height: 40px;
+}
+#noteContentWrapper{
+    width: 80%;
+    margin: 0 10%;
+    background-color: white;
+    border-radius: 16px;
+    padding: 1% 2%;
+    position: relative;
+    min-height: 300px;
+    padding-bottom: 60px;
+    box-shadow: 0px 0px 10px rgb(237, 237, 237);
+}
+#shareNoteBtn{
+    position:absolute;
+    bottom: 5%;
+    right: 1%;
+    height: 40px;
+    width: 100px;
+    border: 1px solid rgb(218, 218, 218);
+    border-radius: 8px;
+    text-align: center;
+    line-height: 40px;
+    text-decoration: none;
+    /*box-shadow: 0px 0px 10px rgb(237, 237, 237);*/
+}
+#shareNoteBtn a{
+    color: black;
+}
+#shareNoteBtn a:visited{
+    color: black;
+}
