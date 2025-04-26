@@ -1,0 +1,92 @@
+.formInput{
+    font-family: "Poppins", sans-serif !important;
+    width: 100%;
+   height: 40px;
+   border: 1px solid rgb(197, 197, 197);
+   border-radius: 8px;
+   padding: 0px 15px !important;
+   box-sizing: border-box !important;
+   margin: 0px 0px 20px 0px !important;
+   font-size: 14px;
+}
+#formWrapper{
+    width: 60%;
+    margin: 5% auto 0;
+    background-color: white;
+    border-radius: 16px;
+    padding: 2%;
+    box-shadow: 0px 0px 10px rgb(237, 237, 237);
+}
+#formMsg{
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 2%;
+}
+#contentArea{
+    font-family: "Poppins", sans-serif !important;
+     width: 100%;
+    border: 1px solid rgb(197, 197, 197);
+   border-radius: 8px;
+   padding: 10px 15px !important;
+   box-sizing: border-box !important;
+   margin: 0px 0px 20px 0px !important;
+   font-size: 14px;
+    min-width: 100%;
+}
+#bottomRow{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+a{
+    color: black;
+    text-decoration: none;
+}
+a:visited{
+    color: black;
+}
+#saveBtn{
+    border: none;
+    background-color: #2563EB;
+    color: white;
+    border-radius: 8px;
+    font-size: 16px;
+    width: 100px;
+    height: 40px;
+}
+#cancelBtn{
+    border: 1px solid rgb(174,174,174);
+    box-sizing: border-box;
+    margin-right: 10px;
+    color: black;
+    border-radius: 8px;
+    font-size: 16px;
+    width: 80px;
+    height: 40px;
+    text-align: center;
+    display: inline-block;
+    line-height: 40px;
+}
+input::file-selector-button{
+    border: 1px solid rgb(174,174,174);
+    box-sizing: border-box;
+    background-color: white;
+    color: black;
+    border-radius: 8px;
+    font-size: 16px;
+    width: 100px;
+    height: 40px;
+}
+#saveBtn:hover,input::file-selector-button:hover{
+    cursor: pointer;
+}
+#wikiNote{
+    height: 50px;
+    line-height: 50px;
+    font-size: 20px;
+    background-color: #3aafb9;
+    border-radius: 8px;
+    text-align: center;
+    color: white;
+    margin-top: 1%;
+}

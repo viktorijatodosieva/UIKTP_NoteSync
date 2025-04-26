@@ -1,54 +1,49 @@
-{% extends 'base.html' %}
+{#{% extends 'base.html' %}#}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NoteSync{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/header.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/view.css') }}">
+
+</head>
+<body>
+<div id='headerWrapper'>
+         <div id='headerLeft'>
+            <img id='logoImg' src="{{ url_for('static',filename='images/logo.png') }}" alt='logo img'/>
+            <a href="{{ url_for('main.get_notes') }}"><div id='headerTitle'>NoteSync</div></a>
+            <div id='myNotes'><a href="{{ url_for('main.get_notes') }}">My Notes</a></div>
+             <div id='sharedNotes'><a href="{{ url_for('main.get_shared_notes') }}">Shared with me</a></div>
+         </div>
+         <div id='headerRight'>
+             <div>Hello, {{ current_user.name }}</div>
+            <img id='notiImg' src="{{ url_for('static',filename='images/noti.png') }}" alt='noti img'/>
+            <a id="headerButton" class="nav-link" href="{{ url_for('auth.logout') }}">Log out</a>
+         </div>
+      </div>
+{#header ends#}
 
 {% block content %}
-    <h1 class="mb-4">{{ note.title }}</h1>
-
-    <div class="mb-4">
-        {{ note.content }}
-    </div>
-
-    <small class="text-muted">
-        Created on {{ note.created_at.strftime('%Y-%m-%d %H:%M') }} | Last updated {{ note.updated_at.strftime('%Y-%m-%d %H:%M') }}
-    </small>
-
-    <hr>
-
-    <form method="POST" action="{{ url_for('main.add_topic_to_note', id=note.id) }}">
-        <div class="mb-3">
-            <label for="topic" class="form-label">Topic</label>
-            <select id="topic" name="topic" class="form-select" style="width: 100%">
-                {% for topic in topics %}
-                    <option value="{{ topic.id }}">{{ topic.name }}</option>
-                {% endfor %}
-            </select>
+    <div id="topRow">
+        <div id="noteTitleWrapper">
+             <a id="backLink" href="{{ url_for('main.get_notes') }}" class="btn btn-secondary">
+                 <img id="backArrowImg" alt="back arrow" src={{ url_for('static',filename='images/back.png') }}>
+             </a>
+            <div id="noteTitle">{{ note.title }}</div>
         </div>
-
-        <button type="submit" class="btn btn-primary">Add Topic</button>
-    </form>
-
-    <hr>
-
-    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-        <a href="{{ url_for('main.share_note', id=note.id) }}" class="btn btn-secondary">Share Note</a>
-        <a href="{{ url_for('main.get_notes') }}" class="btn btn-secondary">Back to Notes</a>
+        <div id="noteBtnWrapper">
+            <a href="{{ url_for('main.edit_note', id=note.id) }}"><div id="editBtn">Edit</div></a>
+            <a href="{{ url_for('main.delete_note', id=note.id) }}"><div id="deleteBtn">Delete</div></a>
+        </div>
+    </div>
+    <div id="noteContentWrapper">
+        {{ note.content }}
+        <div id="shareNoteBtn">
+            <a href="{{ url_for('main.share_note', id=note.id) }}">Share note</a>
+        </div>
     </div>
 {% endblock %}
-
-{% block scripts %}
-    <!-- jQuery first -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- Then Select2 CSS & JS -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-    <script>
-        $(document).ready(function() {
-            $('#topic').select2({
-                tags: true,
-                placeholder: 'Select or type a topic',
-                width: 'resolve'
-            });
-        });
-    </script>
-{% endblock %}
+</body>
+</html>

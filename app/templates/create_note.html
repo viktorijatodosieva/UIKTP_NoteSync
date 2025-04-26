@@ -1,13 +1,38 @@
-{% extends 'base.html' %}
+{#{% extends 'base.html' %}#}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NoteSync{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/header.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/createnote.css') }}">
+
+</head>
+<body>
+<div id='headerWrapper'>
+         <div id='headerLeft'>
+            <img id='logoImg' src="{{ url_for('static',filename='images/logo.png') }}" alt='logo img'/>
+            <a href="{{ url_for('main.get_notes') }}"><div id='headerTitle'>NoteSync</div></a>
+            <div id='myNotes'><a href="{{ url_for('main.get_notes') }}">My Notes</a></div>
+             <div id='sharedNotes'><a href="{{ url_for('main.get_shared_notes') }}">Shared with me</a></div>
+         </div>
+         <div id='headerRight'>
+             <div>Hello, {{ current_user.name }}</div>
+            <img id='notiImg' src="{{ url_for('static',filename='images/noti.png') }}" alt='noti img'/>
+            <a id="headerButton" class="nav-link" href="{{ url_for('auth.logout') }}">Log out</a>
+         </div>
+      </div>
+{#header ends#}
 
 {% block content %}
-    <div class="auth-container">
-        <h2 class="mb-4">Create New Note</h2>
+    <div id="formWrapper" class="auth-container">
+        <div id="formMsg">Create New Note</div>
         <form method="POST" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
             <div class="mb-3">
-                {{ form.title.label(class="form-label") }}
-                {{ form.title(class="form-control") }}
+{#                {{ form.title.label(class="form-label") }}#}
+                {{ form.title(class="form-control formInput", placeholder="Note Title") }}
                 {% if form.title.errors %}
                     <div class="text-danger">
                         {% for error in form.title.errors %}
@@ -17,8 +42,8 @@
                 {% endif %}
             </div>
             <div class="mb-3">
-                {{ form.content.label(class="form-label") }}
-                {{ form.content(class="form-control", rows=8) }}
+{#                {{ form.content.label(class="form-label") }}#}
+                {{ form.content(id="contentArea", class="form-control",placeholder="Start typing your note...", rows=8) }}
                 {% if form.content.errors %}
                     <div class="text-danger">
                         {% for error in form.content.errors %}
@@ -27,21 +52,27 @@
                     </div>
                 {% endif %}
             </div>
-            <div class="mb-3">
-                {{ form.image.label(class="form-label") }}
-                {{ form.image(class="form-control", rows=8) }}
-                {% if form.image.errors %}
-                    <div class="text-danger">
-                        {% for error in form.image.errors %}
-                            <small>{{ error }}</small>
-                        {% endfor %}
-                    </div>
-                {% endif %}
+            <div id="bottomRow" class="mb-3">
+{#                {{ form.image.label(class="form-label") }}#}
+                <div>
+                    <div>Upload Image</div>
+                    {{ form.image(class="form-control", rows=8) }}
+                    {% if form.image.errors %}
+                        <div class="text-danger">
+                            {% for error in form.image.errors %}
+                                <small>{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            <div >
+                <div id="cancelBtn"><a href="{{ url_for('main.get_notes') }}" class="btn btn-secondary">Cancel</a></div>
+                <button type="submit" id="saveBtn">Save Note</button>
             </div>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-between">
-                <a href="{{ url_for('main.get_notes') }}" class="btn btn-secondary">Cancel</a>
-                <button type="submit" class="btn btn-primary">Save Note</button>
             </div>
         </form>
+        <a href="{{ url_for('main.get_wikinote') }}"><div id="wikiNote">Or click here to generate a WikiNote</div></a>
     </div>
 {% endblock %}
+</body>
+</html>

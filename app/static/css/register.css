@@ -1,0 +1,59 @@
+#signUpWrapper{
+   width: 26vw;
+   margin: 5% auto 0;
+   font-family: "Poppins", sans-serif;
+   font-style: normal;
+
+}
+.signUpInput{
+   width: 100%;
+   height: 40px;
+   border: 1px solid rgb(197, 197, 197);
+   border-radius: 8px;
+   padding: 0px 15px !important;
+   box-sizing: border-box !important;
+   margin: 0px 0px 20px 0px !important;
+   font-size: 14px;
+}
+#signUpForm{
+   display: flex;
+   width: 100%;
+   flex-direction: column;
+    margin-top: 20%;
+}
+#createMsg{
+   font-size: 30px;
+   font-weight: bold;
+   align-self: center;
+    text-align: center;
+}
+#joinMsg{
+   align-self: center;
+}
+#nameLabelWrapper{
+   width: 100%;
+   margin-top: 5%;
+   display: flex;
+   gap: 20px;
+   justify-content: space-evenly;
+}
+#name,#username{
+   width: 100%;
+   align-content: start;
+}
+#nameInputWrapper{
+   width: 100%;
+   display: flex;
+   gap: 20px;
+   justify-content: space-evenly;
+}
+#createAccountBtn{
+   height: 40px;
+   border: none;
+   color: white;
+   background-color: #2563EB;
+   border-radius: 8px;
+   font-family: "Poppins", sans-serif !important;
+   font-style: normal !important;
+   font-size: 14px;
+}

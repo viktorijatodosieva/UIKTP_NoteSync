@@ -1,0 +1,68 @@
+#deleteWrapper{
+    width: 60%;
+    margin: 0 20%;
+    background-color: white;
+}
+.auth-container{
+    margin-top: 5%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    padding: 5% 10%;
+    border-radius: 16px;
+    box-shadow: 0px 0px 10px rgb(237, 237, 237);
+}
+.card-title,.card-body{
+    border:1px solid #bababa;
+    padding: 1%;
+}
+.card-title,.card-body,.card{
+    min-width: 100%;
+}
+.card-title{
+    font-size: 18px;
+    font-weight: 600;
+    border-bottom: none;
+    border-radius: 8px 8px 0px 0px;
+}
+.card-body{
+    border-radius: 0 0 0 8px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+.card-text{
+    margin-top: 0 !important;
+}
+#deleteBtn{
+    background-color: #DC2626;
+    box-sizing: border-box;
+    color: white;
+    border:none;
+    border-radius: 8px;
+    font-size: 16px;
+    width: 80px;
+    height: 40px;
+    text-align: center;
+    display: inline-block;
+    line-height: 40px;
+}
+#bottomRow{
+    margin-top: 10%;
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+}
+#bottomRow a{
+    width: 80px;
+    height: 40px;
+    text-align: center;
+    display: inline-block;
+    line-height: 40px;
+    text-decoration: none;
+    border: 1px solid #6c757d;
+    border-radius: 10px;
+}
+#bottomRow a:visited{
+    color: black;
+}

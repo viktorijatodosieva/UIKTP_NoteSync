@@ -19,7 +19,7 @@ auth_bp = Blueprint('auth', __name__)
 @login_required
 def index():
     notes = Note.query.filter_by(created_by=current_user.id).all()
-    return render_template('dashboard.html', notes=notes)
+    return render_template('notes_list.html', notes=notes)
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
@@ -131,6 +131,30 @@ def create_note():
 def get_notes():
     notes = Note.query.filter_by(created_by=current_user.id).all()
     return render_template('notes_list.html', notes=notes)
+
+@main_bp.route('/wikinote',methods=['GET', 'POST'])
+@login_required
+def get_wikinote():
+    form = NoteForm()
+    if form.validate_on_submit():
+        content = form.content.data
+
+        if form.image.data:
+            extracted_text = ocr_service.extract_text(form.image.data)
+            if extracted_text:
+                content = content + '\n' + extracted_text
+
+        new_note = Note(
+            title=form.title.data,
+            content=content,
+            created_by=current_user.id
+        )
+        db.session.add(new_note)
+        db.session.commit()
+        flash('Note created successfully!', 'success')
+        return redirect(url_for('main.index'))
+    notes = Note.query.filter_by(created_by=current_user.id).all()
+    return render_template('wikinote.html', notes=notes, form=form)
 
 
 @main_bp.route('/notes/shared-with-me')

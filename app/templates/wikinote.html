@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NoteSync{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/header.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/wikinote.css') }}">
+</head>
+<body>
+<div id='headerWrapper'>
+         <div id='headerLeft'>
+            <img id='logoImg' src="{{ url_for('static',filename='images/logo.png') }}" alt='logo img'/>
+            <a href="{{ url_for('main.get_notes') }}"><div id='headerTitle'>NoteSync</div></a>
+            <div id='myNotes'><a href="{{ url_for('main.get_notes') }}">My Notes</a></div>
+             <div id='sharedNotes'><a href="{{ url_for('main.get_shared_notes') }}">Shared with me</a></div>
+         </div>
+         <div id='headerRight'>
+             <div>Hello, {{ current_user.name }}</div>
+            <img id='notiImg' src="{{ url_for('static',filename='images/noti.png') }}" alt='noti img'/>
+            <a id="headerButton" class="nav-link" href="{{ url_for('auth.logout') }}">Log out</a>
+         </div>
+      </div>
+
+{% block content %}
+    <div id="formWrapper" class="auth-container">
+        <div id="formMsg">Create a WikiNote</div>
+        <div id="formDesc">Create a new note from a Wikipedia article</div>
+        <div id="inputRow">
+            <div id="inputLabel">Enter topic</div>
+            <input placeholder="Enter a topic for which you want a note to be generated" class="formInput" id="wikinoteInput" type="text">
+        </div>
+        <button id="generateWikinote">Click here to generate your WikiNote</button>
+        <div id="noteOutput">
+            <div>Title</div>
+            <div id="noteTitle"></div>
+            <div>Content</div>
+            <div id="noteContent"></div>
+        </div>
+        <form id="createNoteForm" method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            {{ form.title(class="form-control", id="titleInput") }}
+            {{ form.content(class="form-control", id="contentInput") }}
+            <div id="cancelBtn"><a href="{{ url_for('main.get_notes') }}" class="btn btn-secondary">Cancel</a></div>
+            <button type="submit" id="realSubmit" class="btn btn-primary">Submit Note</button>
+        </form>
+    </div>
+
+{% endblock %}
+<script>
+    document.getElementById('generateWikinote').addEventListener('click', async () => {
+    const query = document.getElementById('wikinoteInput').value;
+    if (!query) return;
+
+    const response = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`);
+
+    if (response.ok) {
+        const data = await response.json();
+
+        const title = data.title;
+        const content = data.extract;
+
+        document.getElementById('noteTitle').innerText = title;
+        document.getElementById('noteContent').innerText = content;
+
+        document.getElementById('noteOutput').style.display = 'block'
+        document.getElementById('cancelBtn').style.display = 'inline-block'
+        document.getElementById('realSubmit').style.display = 'inline-block'
+
+        document.getElementById('titleInput').value = title;
+        document.getElementById('contentInput').value = content;
+
+    } else {
+        alert('Wikipedia page not found!');
+    }
+});
+
+document.getElementById('realSubmit').addEventListener('click', () => {
+    const title = document.getElementById('previewTitle').innerText;
+    const content = document.getElementById('previewContent').innerText;
+
+    document.getElementById('titleInput').value = title;
+    document.getElementById('contentInput').value = content;
+
+    document.getElementById('createNoteForm').submit();
+});
+</script>
+</body>
+</html>
