@@ -30,12 +30,10 @@
             <div id="inputLabel">Enter topic</div>
             <input placeholder="Enter a topic for which you want a note to be generated" class="formInput" id="wikinoteInput" type="text">
         </div>
-        <button id="generateWikinote">Click here to generate your WikiNote</button>
-        <div id="noteOutput">
-            <div>Title</div>
-            <div id="noteTitle"></div>
-            <div>Content</div>
-            <div id="noteContent"></div>
+        <button id="generateWikinote">Search for wiki articles</button>
+        <div id="resultsTitle">Results</div>
+        <div id="search-results">
+
         </div>
         <form id="createNoteForm" method="POST" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
@@ -48,42 +46,81 @@
 
 {% endblock %}
 <script>
+    function handleButtonClick(event) {
+      const pageId = event.target.id;
+
+      fetch('https://en.wikipedia.org/w/api.php?action=query&prop=extracts&pageids=' + pageId + '&format=json&origin=*')
+        .then(response => response.json())
+        .then(result => {
+          const pages = result.query.pages;
+          const page = Object.values(pages)[0];
+
+          const title = page.title;
+          const content = page.extract;
+
+          document.getElementById('titleInput').value = title;
+          document.getElementById('contentInput').value = content;
+
+          document.getElementById('createNoteForm').submit();
+
+          console.log('Title:', title);
+          console.log('Content:', content);
+    })
+    .catch(error => {
+      console.error('Error fetching details:', error);
+    });
+}
     document.getElementById('generateWikinote').addEventListener('click', async () => {
     const query = document.getElementById('wikinoteInput').value;
     if (!query) return;
 
-    const response = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`);
+    const response = await fetch('https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch='
+    + encodeURIComponent(query)
+    + '&format=json&origin=*');
+
 
     if (response.ok) {
         const data = await response.json();
+        {#console.log(data);#}
 
-        const title = data.title;
-        const content = data.extract;
+        const container = document.getElementById('search-results');
 
-        document.getElementById('noteTitle').innerText = title;
-        document.getElementById('noteContent').innerText = content;
+        const resultsTitle = document.getElementById('resultsTitle');
+        resultsTitle.style.display='block'
 
-        document.getElementById('noteOutput').style.display = 'block'
-        document.getElementById('cancelBtn').style.display = 'inline-block'
-        document.getElementById('realSubmit').style.display = 'inline-block'
+        data.query.search.forEach(item => {
+          const card = document.createElement('div');
+          card.classList.add('card');
+          card.id = item.pageid;
+          const toprow = document.createElement('div');
+          toprow.classList.add('topRow');
 
-        document.getElementById('titleInput').value = title;
-        document.getElementById('contentInput').value = content;
+          const title = document.createElement('div');
+          title.innerHTML = item.title;
+
+          const snippet = document.createElement('div');
+          snippet.innerHTML = item.snippet;
+
+          const button = document.createElement('button');
+          button.textContent = 'Create';
+          button.classList.add('cardBtn');
+          button.id=item.pageid;
+          button.addEventListener('click', handleButtonClick);
+
+          toprow.appendChild(title);
+          toprow.appendChild(button);
+          card.appendChild(toprow);
+          card.appendChild(snippet);
+
+
+          container.appendChild(card);
+});
 
     } else {
         alert('Wikipedia page not found!');
     }
 });
 
-document.getElementById('realSubmit').addEventListener('click', () => {
-    const title = document.getElementById('previewTitle').innerText;
-    const content = document.getElementById('previewContent').innerText;
-
-    document.getElementById('titleInput').value = title;
-    document.getElementById('contentInput').value = content;
-
-    document.getElementById('createNoteForm').submit();
-});
 </script>
 </body>
 </html>
