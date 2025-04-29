@@ -11,31 +11,43 @@
 </head>
 <body>
 <div id='headerWrapper'>
-         <div id='headerLeft'>
-            <img id='logoImg' src="{{ url_for('static',filename='images/logo.png') }}" alt='logo img'/>
-            <a href="{{ url_for('main.get_notes') }}"><div id='headerTitle'>NoteSync</div></a>
-            <div id='myNotes'><a href="{{ url_for('main.get_notes') }}">My Notes</a></div>
-             <div id='sharedNotes'><a href="{{ url_for('main.get_shared_notes') }}">Shared with me</a></div>
-         </div>
-         <div id='headerRight'>
-             <div>Hello, {{ current_user.name }}</div>
-            <img id='notiImg' src="{{ url_for('static',filename='images/noti.png') }}" alt='noti img'/>
-            <a id="headerButton" class="nav-link" href="{{ url_for('auth.logout') }}">Log out</a>
-         </div>
-      </div>
+    <div id='headerLeft'>
+        <img id='logoImg' src="{{ url_for('static',filename='images/logo.png') }}" alt='logo img'/>
+        <a href="{{ url_for('main.get_notes') }}">
+            <div id='headerTitle'>NoteSync</div>
+        </a>
+        <div id='myNotes'><a href="{{ url_for('main.get_notes') }}">My Notes</a></div>
+        <div id='sharedNotes'><a href="{{ url_for('main.get_shared_notes') }}">Shared with me</a></div>
+    </div>
+    <div id='headerRight'>
+        <div>Hello, {{ current_user.name }}</div>
+        <img id='notiImg' src="{{ url_for('static',filename='images/noti.png') }}" alt='noti img'/>
+        <a id="headerButton" class="nav-link" href="{{ url_for('auth.logout') }}">Log out</a>
+    </div>
+</div>
 {#header ends#}
 
 {% block content %}
     <div id="topRow">
         <div id="noteTitleWrapper">
-             <a id="backLink" href="{{ url_for('main.get_notes') }}" class="btn btn-secondary">
-                 <img id="backArrowImg" alt="back arrow" src={{ url_for('static',filename='images/back.png') }}>
-             </a>
+            <a id="backLink" href="{{ url_for('main.get_notes') }}" class="btn btn-secondary">
+                <img id="backArrowImg" alt="back arrow" src={{ url_for('static',filename='images/back.png') }}>
+            </a>
             <div id="noteTitle">{{ note.title }}</div>
+            <h5>Tags</h5>
+            <ul>
+                {% for tag in tags_for_note_by_user %}
+                    <li>{{ tag.name }}</li>
+                {% endfor %}
+            </ul>
         </div>
         <div id="noteBtnWrapper">
-            <a href="{{ url_for('main.edit_note', id=note.id) }}"><div id="editBtn">Edit</div></a>
-            <a href="{{ url_for('main.delete_note', id=note.id) }}"><div id="deleteBtn">Delete</div></a>
+            <a href="{{ url_for('main.edit_note', id=note.id) }}">
+                <div id="editBtn">Edit</div>
+            </a>
+            <a href="{{ url_for('main.delete_note', id=note.id) }}">
+                <div id="deleteBtn">Delete</div>
+            </a>
         </div>
     </div>
     <div id="noteContentWrapper">
@@ -43,7 +55,39 @@
         <div id="shareNoteBtn">
             <a href="{{ url_for('main.share_note', id=note.id) }}">Share note</a>
         </div>
+        <div>
+        <h3>Add tag</h3>
+            <form method="POST" action="{{ url_for('main.add_tag_to_note', id=note.id) }}">
+                <div class="mb-3">
+                    <label for="tag" class="form-label">Tag</label>
+                    <select id="tag" name="tag" class="form-select" style="width: 100%">
+                        {% for tag in all_tags_by_user %}
+                            <option value="{{ tag.name }}">{{ tag.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Add</button>
+            </form>
+        </div>
     </div>
+
+    <!-- jQuery first -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Then Select2 CSS & JS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#tag').select2({
+                tags: true,
+                placeholder: 'Select or type a topic',
+                width: 'resolve'
+            });
+        });
+    </script>
 {% endblock %}
 </body>
 </html>
