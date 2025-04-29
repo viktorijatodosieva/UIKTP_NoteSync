@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt
-from .models import db, User, Note, UserHasAccessNote, Tag
+from .models import db, User, Note, UserHasAccessNote, Tag, NoteBelongsToTag
 from .forms import RegistrationForm, LoginForm, NoteForm, ShareNoteForm  # Import your forms
 from .extensions import bcrypt
 from .middleware import creator_or_shared_required, creator_required
@@ -204,7 +204,7 @@ def share_note(id):
             return redirect(request.referrer)
 
         already_shared = UserHasAccessNote.query.filter_by(user_id=user.id, note_id=note.id).first()
-        creator = note.created_by == current_user.id
+        creator = note.created_by == user.id
         if already_shared or creator:
             flash(f'Note already shared with {username}', 'warning')
             return redirect(request.referrer)
@@ -224,8 +224,11 @@ def share_note(id):
 @creator_or_shared_required
 def view_note(id):
     note = Note.query.get_or_404(id)
+    tags_id_for_note = [tag_note.tag_id for tag_note in note.note_tags]
+    all_tags_by_user = Tag.query.filter_by(created_by=current_user.id).all()
+    tags_for_note_by_user = [tag for tag in all_tags_by_user if tag.id in tags_id_for_note]
 
-    return render_template('view_note.html', note=note)
+    return render_template('view_note.html', note=note, tags_for_note_by_user=tags_for_note_by_user, all_tags_by_user=all_tags_by_user)
 
 
 @main_bp.route('/note/delete/<int:id>', methods=['GET', 'POST'])
@@ -245,23 +248,20 @@ def delete_note(id):
 @main_bp.route('/note/<int:id>/add_tag', methods=['POST'])
 def add_tag_to_note(id):
     note = Note.query.get_or_404(id)
-    tag_input = request.form.get('tag')  # can be topic.id or new string
+    tag_input = request.form.get('tag')
 
-    # Try to interpret as existing topic ID
-    tag = None
-    if tag_input.isdigit():
-        tag = Tag.query.get(int(tag_input))
+    tag_existing_for_user = Tag.query.filter_by(created_by=current_user.id, name=tag_input).all()
+    if not tag_existing_for_user:
+        tag = Tag(name=tag_input, created_by=current_user.id)
+        db.session.add(tag)
+        db.session.commit()
     else:
-        # Check if topic already exists with that name (prevent duplicates)
-        tag = Tag.query.filter_by(name=tag_input).first()
-        if not tag:
-            tag = Tag(name=tag_input)
-            db.session.add(tag)
-            db.session.commit()
+        tag = tag_existing_for_user[0]
 
-    if tag not in note.tags:
-        note.topics.append(tag)
+    if tag not in note.note_tags:
+        note_tag = NoteBelongsToTag(note_id=note.id, tag_id=tag.id)
+        note.note_tags.append(note_tag)
         db.session.commit()
 
-    flash('Topic added to note!', 'success')
+    flash(f'Note successfully tagged as {tag_input}.', 'success')
     return redirect(url_for('main.view_note', id=note.id))
