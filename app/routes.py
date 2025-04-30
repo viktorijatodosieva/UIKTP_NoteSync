@@ -1,11 +1,17 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, abort
+import os
+
+from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt
+from werkzeug.utils import secure_filename
+
 from .models import db, User, Note, UserHasAccessNote, Tag, NoteBelongsToTag
 from .forms import RegistrationForm, LoginForm, NoteForm, ShareNoteForm  # Import your forms
 from .extensions import bcrypt
 from .middleware import creator_or_shared_required, creator_required
 from datetime import datetime
+from fpdf import FPDF
+from flask import make_response
 
 
 from .services.ocr_service import OCRService
@@ -90,26 +96,47 @@ def logout():
 @main_bp.route('/create', methods=['GET', 'POST'])
 @login_required
 def create_note():
-    # form = NoteForm()
-    # if form.validate_on_submit():
-    #     new_note = Note(
-    #         title=form.title.data,
-    #         content=form.content.data,
-    #         created_by=current_user.id
-    #     )
-    #     db.session.add(new_note)
-    #     db.session.commit()
-    #     flash('Note created successfully!', 'success')
-    #     return redirect(url_for('main.dashboard'))
-    # return render_template('create_note.html', form=form)
     form = NoteForm()
-    if form.validate_on_submit():
-        content = form.content.data
 
-        if form.image.data:
-            extracted_text = ocr_service.extract_text(form.image.data)
-            if extracted_text:
-                content = content + '\n' + extracted_text
+    if form.validate_on_submit():
+        content = form.content.data or ""
+        image_path = None
+        raw_text = None
+
+        uploaded_file = form.file.data
+
+        if uploaded_file:
+            filename = secure_filename(uploaded_file.filename)
+            extension = filename.rsplit('.', 1)[-1].lower()
+
+            uploaded_file.seek(0)
+
+            if extension in ['png', 'jpg', 'jpeg']:
+                raw_text = ocr_service.extract_raw_text(uploaded_file)
+                corrected_text = ocr_service.correct_text(raw_text)
+
+                uploaded_file.seek(0)
+                image_path = os.path.join('static', 'images', filename)
+                full_image_path = os.path.join(current_app.root_path, image_path)
+                uploaded_file.save(full_image_path)
+
+                if corrected_text:
+                    raw_text = corrected_text
+
+            elif extension == 'txt':
+                try:
+                    file_content = uploaded_file.read()
+                    raw_text = file_content.decode('utf-8')
+                except UnicodeDecodeError:
+                    uploaded_file.seek(0)
+                    raw_text = uploaded_file.read().decode('latin-1')
+
+            else:
+                flash('Unsupported file type. Only image files (PNG, JPG, JPEG) and .txt files are allowed.', 'danger')
+                return redirect(url_for('main.create_note'))
+
+        if raw_text:
+            content = raw_text.strip()
 
         new_note = Note(
             title=form.title.data,
@@ -119,9 +146,7 @@ def create_note():
         db.session.add(new_note)
         db.session.commit()
         flash('Note created successfully!', 'success')
-        if form.image.data:
-            return redirect(url_for('main.edit_note', id=new_note.id))
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.edit_note', id=new_note.id))
 
     return render_template('create_note.html', form=form)
 
@@ -265,3 +290,27 @@ def add_tag_to_note(id):
 
     flash(f'Note successfully tagged as {tag_input}.', 'success')
     return redirect(url_for('main.view_note', id=note.id))
+
+@main_bp.route('/note/export/<int:id>')
+@login_required
+def export_note_pdf(id):
+    note = Note.query.get_or_404(id)
+
+    if note.created_by != current_user.id:
+        flash('You do not have permission to export this note.', 'danger')
+        return redirect(url_for('main.dashboard'))
+
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font('Arial', 'B', 16)
+    pdf.cell(0, 10, note.title, ln=True, align='C')
+
+    pdf.ln(10)
+    pdf.set_font('Arial', '', 12)
+    pdf.multi_cell(0, 10, note.content)
+
+    response = make_response(pdf.output(dest='S').encode('latin1'))
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = f'attachment; filename={note.title}.pdf'
+
+    return response
