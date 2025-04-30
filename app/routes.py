@@ -116,12 +116,10 @@ def create_note():
                 corrected_text = ocr_service.correct_text(raw_text)
 
                 uploaded_file.seek(0)
-                image_path = os.path.join('static', 'images', filename)
-                full_image_path = os.path.join(current_app.root_path, image_path)
-                uploaded_file.save(full_image_path)
 
                 if corrected_text:
-                    raw_text = corrected_text
+                    raw_text = corrected_text.replace("\n", " ")
+                    raw_text = content + "\n\n" + raw_text if content else raw_text
 
             elif extension == 'txt':
                 try:
@@ -130,6 +128,7 @@ def create_note():
                 except UnicodeDecodeError:
                     uploaded_file.seek(0)
                     raw_text = uploaded_file.read().decode('latin-1')
+                raw_text = content + "\n\n" + raw_text if content else raw_text
 
             else:
                 flash('Unsupported file type. Only image files (PNG, JPG, JPEG) and .txt files are allowed.', 'danger')
@@ -163,11 +162,6 @@ def get_wikinote():
     form = NoteForm()
     if form.validate_on_submit():
         content = form.content.data
-
-        if form.image.data:
-            extracted_text = ocr_service.extract_text(form.image.data)
-            if extracted_text:
-                content = content + '\n' + extracted_text
 
         new_note = Note(
             title=form.title.data,
