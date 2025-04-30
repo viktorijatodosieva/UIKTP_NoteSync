@@ -51,26 +51,36 @@
         </div>
     </div>
     <div id="noteContentWrapper">
-        {{ note.content | safe }}
+    {{ note.content | safe }}
+    <div id="noteButtonsWrapper" style="position: absolute; bottom: 10px; right: 1%; display: flex; gap: 10px;">
         <div id="shareNoteBtn">
             <a href="{{ url_for('main.share_note', id=note.id) }}">Share note</a>
         </div>
-        <div>
-        <h3>Add tag</h3>
-            <form method="POST" action="{{ url_for('main.add_tag_to_note', id=note.id) }}">
-                <div class="mb-3">
-                    <label for="tag" class="form-label">Tag</label>
-                    <select id="tag" name="tag" class="form-select" style="width: 100%">
-                        {% for tag in all_tags_by_user %}
-                            <option value="{{ tag.name }}">{{ tag.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Add</button>
-            </form>
+        <div id="exportNoteBtn">
+            <a href="{{ url_for('main.export_note_pdf', id=note.id) }}" class="btn btn-outline-secondary btn-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                     class="bi bi-file-earmark-pdf me-1" viewBox="0 0 16 16">
+                    <path d="M5.5 5.5v5h.8V5.5h-.8zm3.4 0v5h.8v-2h.5a1.5 1.5 0 0 0 0-3h-.5zm.8 2h-.5v-2h.5a.5.5 0 0 1 0 1h-.5v1h.5a.5.5 0 0 1 0 1zM2 2a2 2 0 0 1 2-2h4l4 4v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2z"/>
+                </svg>
+                Export PDF
+            </a>
         </div>
     </div>
+    <h3>Add tag</h3>
+    <form method="POST" action="{{ url_for('main.add_tag_to_note', id=note.id) }}">
+        <div class="mb-3">
+            <label for="tag" class="form-label">Tag</label>
+            <select id="tag" name="tag" class="form-select" style="width: 100%">
+                {% for tag in all_tags_by_user %}
+                    <option value="{{ tag.name }}">{{ tag.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Add</button>
+    </form>
+</div>
+
+
 
     <!-- jQuery first -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

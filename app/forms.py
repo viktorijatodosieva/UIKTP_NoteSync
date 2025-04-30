@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Email, Length
 from flask_wtf.file import FileField, FileAllowed
+from wtforms.fields.simple import SubmitField
 
 class RegistrationForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
@@ -17,9 +18,12 @@ class LoginForm(FlaskForm):
 class NoteForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     content = TextAreaField('Content')
-    image = FileField('Image Upload', validators=[
-        FileAllowed(['jpg', 'png', 'jpeg'], 'Images (JPG/PNG) only!')
+
+    file = FileField('Upload Image or Document', validators=[
+        FileAllowed(['jpg', 'png', 'jpeg','txt'], 'Images and Documents only!')
     ])
+
+    submit = SubmitField('Save Note')
 
 class ShareNoteForm(FlaskForm):
     user = StringField('User', validators=[DataRequired()])
