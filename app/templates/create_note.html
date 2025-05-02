@@ -7,7 +7,6 @@
     <title>{% block title %}NoteSync{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/header.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/createnote.css') }}">
-
 </head>
 <body>
 <div id='headerWrapper'>
@@ -23,61 +22,66 @@
         <div>Hello, {{ current_user.name }}</div>
         <img id='notiImg' src="{{ url_for('static',filename='images/noti.png') }}" alt='noti img'/>
         <a id="headerButton" class="nav-link" href="{{ url_for('auth.logout') }}">Log out</a>
+        <div id="notificationList"
+             style="display:none; position:absolute; top:60px; right:10px; width:300px; max-height:400px; overflow-y:auto; border:1px solid #ccc; background:#fff; padding:10px; box-shadow:0 0 10px rgba(0,0,0,0.1); z-index:1000;">
+        </div>
     </div>
 </div>
 {#header ends#}
 
 {% block content %}
-<div id="formWrapper" class="auth-container">
-    <div id="formMsg">Create New Note</div>
-    <form method="POST" enctype="multipart/form-data">
-        {{ form.hidden_tag() }}
-        <div class="mb-3">
-            {# {{ form.title.label(class="form-label") }}#}
-            {{ form.title(class="form-control formInput", placeholder="Note Title") }}
-            {% if form.title.errors %}
-            <div class="text-danger">
-                {% for error in form.title.errors %}
-                <small>{{ error }}</small>
-                {% endfor %}
-            </div>
-            {% endif %}
-        </div>
-        <div class="mb-3">
-            {# {{ form.content.label(class="form-label") }}#}
-            {{ form.content(id="contentArea", class="form-control",placeholder="Start typing your note...", rows=8) }}
-            {% if form.content.errors %}
-            <div class="text-danger">
-                {% for error in form.content.errors %}
-                <small>{{ error }}</small>
-                {% endfor %}
-            </div>
-            {% endif %}
-        </div>
-        <div id="bottomRow" class="mb-3">
-            {# {{ form.file.label(class="form-label") }}#}
-            <div>
-                <div>Upload File</div>
-                {{ form.file(class="form-control") }}
-                {% if form.file.errors %}
-                <div class="text-danger">
-                    {% for error in form.file.errors %}
-                    <small>{{ error }}</small>
-                    {% endfor %}
-                </div>
+    <div id="formWrapper" class="auth-container">
+        <div id="formMsg">Create New Note</div>
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                {# {{ form.title.label(class="form-label") }}#}
+                {{ form.title(class="form-control formInput", placeholder="Note Title") }}
+                {% if form.title.errors %}
+                    <div class="text-danger">
+                        {% for error in form.title.errors %}
+                            <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
                 {% endif %}
             </div>
-
-            <div>
-                <div id="cancelBtn"><a href="{{ url_for('main.get_notes') }}" class="btn btn-secondary">Cancel</a></div>
-                <button type="submit" id="saveBtn">Save Note</button>
+            <div class="mb-3">
+                {# {{ form.content.label(class="form-label") }}#}
+                {{ form.content(id="contentArea", class="form-control",placeholder="Start typing your note...", rows=8) }}
+                {% if form.content.errors %}
+                    <div class="text-danger">
+                        {% for error in form.content.errors %}
+                            <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
-        </div>
-    </form>
-    <a href="{{ url_for('main.get_wikinote') }}">
-        <div id="wikiNote">Or click here to generate a WikiNote</div>
-    </a>
-</div>
+            <div id="bottomRow" class="mb-3">
+                {# {{ form.file.label(class="form-label") }}#}
+                <div>
+                    <div>Upload File</div>
+                    {{ form.file(class="form-control") }}
+                    {% if form.file.errors %}
+                        <div class="text-danger">
+                            {% for error in form.file.errors %}
+                                <small>{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <div id="cancelBtn"><a href="{{ url_for('main.get_notes') }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                    <button type="submit" id="saveBtn">Save Note</button>
+                </div>
+            </div>
+        </form>
+        <a href="{{ url_for('main.get_wikinote') }}">
+            <div id="wikiNote">Or click here to generate a WikiNote</div>
+        </a>
+    </div>
 {% endblock %}
 </body>
+<script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
 </html>

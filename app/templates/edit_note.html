@@ -7,22 +7,26 @@
     <title>{% block title %}NoteSync{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/header.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/edit.css') }}">
-
 </head>
 <body>
 <div id='headerWrapper'>
-         <div id='headerLeft'>
-            <img id='logoImg' src="{{ url_for('static',filename='images/logo.png') }}" alt='logo img'/>
-            <a href="{{ url_for('main.get_notes') }}"><div id='headerTitle'>NoteSync</div></a>
-            <div id='myNotes'><a href="{{ url_for('main.get_notes') }}">My Notes</a></div>
-             <div id='sharedNotes'><a href="{{ url_for('main.get_shared_notes') }}">Shared with me</a></div>
-         </div>
-         <div id='headerRight'>
-             <div>Hello, {{ current_user.name }}</div>
-            <img id='notiImg' src="{{ url_for('static',filename='images/noti.png') }}" alt='noti img'/>
-            <a id="headerButton" class="nav-link" href="{{ url_for('auth.logout') }}">Log out</a>
-         </div>
-      </div>
+    <div id='headerLeft'>
+        <img id='logoImg' src="{{ url_for('static',filename='images/logo.png') }}" alt='logo img'/>
+        <a href="{{ url_for('main.get_notes') }}">
+            <div id='headerTitle'>NoteSync</div>
+        </a>
+        <div id='myNotes'><a href="{{ url_for('main.get_notes') }}">My Notes</a></div>
+        <div id='sharedNotes'><a href="{{ url_for('main.get_shared_notes') }}">Shared with me</a></div>
+    </div>
+    <div id='headerRight'>
+        <div>Hello, {{ current_user.name }}</div>
+        <img id='notiImg' src="{{ url_for('static',filename='images/noti.png') }}" alt='noti img'/>
+        <a id="headerButton" class="nav-link" href="{{ url_for('auth.logout') }}">Log out</a>
+        <div id="notificationList"
+             style="display:none; position:absolute; top:60px; right:10px; width:300px; max-height:400px; overflow-y:auto; border:1px solid #ccc; background:#fff; padding:10px; box-shadow:0 0 10px rgba(0,0,0,0.1); z-index:1000;">
+        </div>
+    </div>
+</div>
 {#header ends#}
 {% block content %}
     <div id="formWrapper" class="auth-container">
@@ -52,13 +56,15 @@
                 {% endif %}
             </div>
             <div id="bottomRow">
-            <a id="cancelBtn" href="{{ url_for('main.get_notes') }}">Cancel</a>
-            <button id="saveBtn" type="submit" class="btn btn-primary">Update Note</button>
-        </div>
+                <a id="cancelBtn" href="{{ url_for('main.get_notes') }}">Cancel</a>
+                <button id="saveBtn" type="submit" class="btn btn-primary">Update Note</button>
+            </div>
         </form>
     </div>
 {% endblock %}
 
 
 </body>
+<script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+
 </html>
