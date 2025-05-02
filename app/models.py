@@ -74,6 +74,16 @@ class Notification(db.Model):
     note = db.relationship('Note', back_populates='notifications')
     referenced_user = db.relationship('User', foreign_keys=[referenced_user_id])
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'created_at': self.created_at.isoformat(),
+            'is_read': self.is_read,
+            'note_id': self.note_id
+        }
+
 
 class Tag(db.Model):
     __tablename__ = 'tag'
