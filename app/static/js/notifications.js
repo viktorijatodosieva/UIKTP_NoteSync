@@ -1,5 +1,13 @@
 document.getElementById('notiImg').addEventListener('click', function () {
+    if(document.getElementById('notificationList') === null){
+        const headerRight = document.getElementById('headerRight');
+        let notiList = document.createElement('div');
+        notiList.id = 'notificationList';
+        headerRight.appendChild(notiList);
+    }
     const container = document.getElementById('notificationList');
+
+    setTimeout(() => {}, 500);
 
     if (container.style.display === 'none') {
         fetch('/notifications')
@@ -12,16 +20,15 @@ document.getElementById('notiImg').addEventListener('click', function () {
                 } else {
                     data.forEach(notification => {
                         const div = document.createElement('div');
-                        div.style.padding = '10px';
-                        div.style.borderBottom = '1px solid #eee';
-                        div.style.cursor = 'pointer';
-                        div.style.backgroundColor = notification.read ? '#f9f9f9' : '#e6f7ff';
+                        div.classList.add("notification");
+                        div.style.backgroundColor = notification.read ? '#f9f9f9' : '#E6F0FE';
 
                         const title = document.createElement('strong');
+                        title.classList.add("notiTitle");
                         title.textContent = notification.title;
-                        title.style.display = 'block';
 
                         const message = document.createElement('span');
+                        message.classList.add("notiMessage");
                         message.textContent = notification.description;
                         message.style.display = 'block';
 

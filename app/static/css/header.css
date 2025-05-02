@@ -85,3 +85,27 @@ body{
    text-decoration: none;
    line-height: 36px;
 }
+.notification{
+   padding: 10px;
+   border-bottom: 1px solid #eee;
+   cursor: pointer;
+   border-radius: 8px;
+}
+.notiTitle,.notiMessage{
+   display: block;
+}
+#notificationList{
+   display:none;
+   position:absolute;
+   top:60px;
+   right:10px;
+   width:300px;
+   max-height:400px;
+   overflow-y:auto;
+   border:1px solid rgb(224, 224, 224);
+   background:#fff;
+   border-radius: 10px;
+   padding:10px;
+   /*box-shadow:0px 0px 10px rgb(237, 237, 237);*/
+   z-index:1000;
+}

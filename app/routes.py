@@ -275,9 +275,10 @@ def view_note(id):
     all_tags_by_user = Tag.query.filter_by(created_by=current_user.id).all()
     tags_for_note_by_user = [tag for tag in all_tags_by_user if tag.id in tags_id_for_note]
     other_users = [User.query.get_or_404(user_note.user_id) for user_note in note.shared_with]
+    allow_edit = note.created_by == current_user.id
 
     return render_template('view_note.html', note=note, tags_for_note_by_user=tags_for_note_by_user,
-                           all_tags_by_user=all_tags_by_user, other_users=other_users)
+                           all_tags_by_user=all_tags_by_user, other_users=other_users, allow_edit=allow_edit)
 
 
 @main_bp.route('/note/delete/<int:id>', methods=['GET', 'POST'])

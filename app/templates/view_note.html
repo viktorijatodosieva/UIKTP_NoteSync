@@ -22,9 +22,6 @@
         <div>Hello, {{ current_user.name }}</div>
         <img id='notiImg' src="{{ url_for('static',filename='images/noti.png') }}" alt='noti img'/>
         <a id="headerButton" class="nav-link" href="{{ url_for('auth.logout') }}">Log out</a>
-        <div id="notificationList"
-             style="display:none; position:absolute; top:60px; right:10px; width:300px; max-height:400px; overflow-y:auto; border:1px solid #ccc; background:#fff; padding:10px; box-shadow:0 0 10px rgba(0,0,0,0.1); z-index:1000;">
-        </div>
     </div>
 </div>
 {#header ends#}
@@ -35,50 +32,66 @@
             <a id="backLink" href="{{ url_for('main.get_notes') }}" class="btn btn-secondary">
                 <img id="backArrowImg" alt="back arrow" src={{ url_for('static',filename='images/back.png') }}>
             </a>
-            <div id="noteTitle">{{ note.title }}</div>
-            <h5>Tags</h5>
-            <ul>
-                {% for tag in tags_for_note_by_user %}
-                    <li>{{ tag.name }}</li>
-                {% endfor %}
-            </ul>
-        <h5>Creator: {{ note.user.username }}</h5>
-        <h5>Viewers: </h5>
-        {% if other_users %}
-            <ul>
-                {% for user in other_users %}
-                    <li>{{ user.username }}</li>
-                {% endfor %}
-            </ul>
-        {% else %}
-        <p>None</p>
-        {% endif %}
-        <h3>Add tag</h3>
-        <form method="POST" action="{{ url_for('main.add_tag_to_note', id=note.id) }}">
-            <div class="mb-3">
-                <label for="tag" class="form-label">Tag</label>
-                <select id="tag" name="tag" class="form-select" style="width: 100%">
-                    {% for tag in all_tags_by_user %}
-                        <option value="{{ tag.name }}">{{ tag.name }}</option>
+            <div id="noteTitleTagsWrapper">
+                <div id="noteTitle">{{ note.title }}</div>
+                <div id="tagsWrapper">
+                    {% for tag in tags_for_note_by_user %}
+                        <div class="tag">{{ tag.name }}</div>
                     {% endfor %}
-                </select>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary">Add</button>
-        </form>
+
+       {% if allow_edit %}
+            <form id="addTagForm" method="POST" action="{{ url_for('main.add_tag_to_note', id=note.id) }}">
+                <div>Add tag</div>
+                    <div style="display: flex; flex-direction: row; gap: 10px">
+                        <select id="tag" name="tag" class="form-select" style="width: 100%">
+                            {% for tag in all_tags_by_user %}
+                                <option value="{{ tag.name }}">{{ tag.name }}</option>
+                            {% endfor %}
+                        </select>
+                    <button id="addTagBtn" type="submit" class="btn btn-primary">+</button>
+                    </div>
+            </form>
+        {% else %}
+        {% endif %}
         </div>
         <div id="noteBtnWrapper">
-            <a href="{{ url_for('main.edit_note', id=note.id) }}">
-                <div id="editBtn">Edit</div>
-            </a>
+            {% if allow_edit %}
+                <a href="{{ url_for('main.edit_note', id=note.id) }}">
+                    <div id="editBtn">Edit</div>
+                </a>
+            {% else %}
+                <div></div>
+            {% endif %}
             <a href="{{ url_for('main.delete_note', id=note.id) }}">
                 <div id="deleteBtn">Delete</div>
             </a>
         </div>
     </div>
     <div id="noteContentWrapper">
-        {{ note.content | safe }}
-        <div id="noteButtonsWrapper" style="position: absolute; bottom: 10px; right: 1%; display: flex; gap: 10px;">
-            <div id="shareNoteBtn">
+        <div id="noteContent">{{ note.content | safe }}</div>
+        <div id="noteContentBottom">
+            <div id="collabWrapper">
+                <div style="font-size: 18px; font-weight: bold;">Collaborators:</div>
+                    <div id="collaborators">
+                        <div>Creator: {{ note.user.username }}</div>
+                        <div>Viewers: </div>
+                        <div id="viewersWrapper">
+                            {% if other_users %}
+
+                                    {% for user in other_users %}
+                                        <div class="viewer">{{ user.username }}</div>
+                                    {% endfor %}
+
+                            {% else %}
+                            <div class="viewer">None</div>
+                            {% endif %}
+                        </div>
+                    </div>
+            </div>
+            <div id="noteContentButtons">
+                <div id="shareNoteBtn">
                 <a href="{{ url_for('main.share_note', id=note.id) }}">Share note</a>
             </div>
             <div id="exportNoteBtn">
@@ -89,6 +102,7 @@
                     </svg>
                     Export PDF
                 </a>
+            </div>
             </div>
         </div>
     </div>
@@ -115,6 +129,38 @@
 
 {% endblock %}
 <script>
+    function getRandomRGB() {
+      const r = Math.floor(Math.random() * 256);
+      const g = Math.floor(Math.random() * 256);
+      const b = Math.floor(Math.random() * 256);
+      return { r, g, b };
+    }
+    function generateTagColors(){
+        let tags = document.getElementsByClassName('tag')
+
+        for(let tag of tags){
+            const {r,g,b} = getRandomRGB();
+            tag.style.color = `rgb(${r}, ${g}, ${b})`;
+            tag.style.backgroundColor = `rgba(${r}, ${g}, ${b},0.15)`;
+        }
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        generateTagColors();
+
+        let searchInput = document.querySelector('.select2-search__field');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const query = this.value.trim().toLowerCase();
+                const noteAnchors = document.querySelectorAll('.select2-results__option');
+
+                noteAnchors.forEach(anchor => {
+                    const title = anchor.textContent.toLowerCase();
+                    anchor.style.display = (!query || title.includes(query)) ? 'block' : 'none';
+                });
+            });
+        }
+    });
 </script>
 </body>
 </html>
