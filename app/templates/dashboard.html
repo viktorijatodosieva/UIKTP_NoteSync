@@ -9,26 +9,29 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/header.css') }}">
 </head>
 <body>
-      <div id='headerWrapper'>
-         <div id='headerLeft'>
-            <img id='logoImg' src="{{ url_for('static',filename='images/logo.png') }}" alt='logo img'/>
-            <a href="{{ url_for('main.get_notes') }}"><div id='headerTitle'>NoteSync</div></a>
-            <div id='myNotes'><a href="{{ url_for('main.get_notes') }}">My Notes</a></div>
-             <div id='sharedNotes'><a href="{{ url_for('main.create_note') }}">
-    Create Note</a></div>
-         </div>
-         <div id='headerRight'>
-             <div>Hello, {{ current_user.name }}</div>
-            <img id='notiImg' src="{{ url_for('static',filename='images/noti.png') }}" alt='noti img'/>
-            <a id="headerButton" class="nav-link" href="{{ url_for('auth.logout') }}">Log out</a>
-         </div>
-      </div>
-{% block content %}
-<div class="container py-4">
-
-
+<div id='headerWrapper'>
+    <div id='headerLeft'>
+        <img id='logoImg' src="{{ url_for('static',filename='images/logo.png') }}" alt='logo img'/>
+        <a href="{{ url_for('main.get_notes') }}">
+            <div id='headerTitle'>NoteSync</div>
+        </a>
+        <div id='myNotes'><a href="{{ url_for('main.get_notes') }}">My Notes</a></div>
+        <div id='sharedNotes'><a href="{{ url_for('main.create_note') }}">
+            Create Note</a></div>
+    </div>
+    <div id='headerRight'>
+        <div>Hello, {{ current_user.name }}</div>
+        <img id='notiImg' src="{{ url_for('static',filename='images/noti.png') }}" alt='noti img'/>
+        <a id="headerButton" class="nav-link" href="{{ url_for('auth.logout') }}">Log out</a>
+    </div>
 </div>
+{% block content %}
+    <div class="container py-4">
+
+
+    </div>
 {% endblock %}
 </body>
+<script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
 </html>
 

@@ -1,11 +1,13 @@
+import json
 import os
 
-from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, current_app, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt
+from sqlalchemy import desc
 from werkzeug.utils import secure_filename
 
-from .models import db, User, Note, UserHasAccessNote, Tag, NoteBelongsToTag
+from .models import db, User, Note, UserHasAccessNote, Tag, NoteBelongsToTag, Notification
 from .forms import RegistrationForm, LoginForm, NoteForm, ShareNoteForm  # Import your forms
 from .extensions import bcrypt
 from .middleware import creator_or_shared_required, creator_required
@@ -14,7 +16,6 @@ from fpdf import FPDF
 from flask import make_response
 import re
 from io import BytesIO
-
 
 from .services.ocr_service import OCRService
 
@@ -118,12 +119,10 @@ def create_note():
                 corrected_text = ocr_service.correct_text(raw_text)
 
                 uploaded_file.seek(0)
-                image_path = os.path.join('static', 'images', filename)
-                full_image_path = os.path.join(current_app.root_path, image_path)
-                uploaded_file.save(full_image_path)
 
                 if corrected_text:
-                    raw_text = corrected_text
+                    raw_text = corrected_text.replace("\n", " ")
+                    raw_text = content + "\n\n" + raw_text if content else raw_text
 
             elif extension == 'txt':
                 try:
@@ -132,6 +131,7 @@ def create_note():
                 except UnicodeDecodeError:
                     uploaded_file.seek(0)
                     raw_text = uploaded_file.read().decode('latin-1')
+                raw_text = content + "\n\n" + raw_text if content else raw_text
 
             else:
                 flash('Unsupported file type. Only image files (PNG, JPG, JPEG) and .txt files are allowed.', 'danger')
@@ -148,7 +148,10 @@ def create_note():
         db.session.add(new_note)
         db.session.commit()
         flash('Note created successfully!', 'success')
-        return redirect(url_for('main.edit_note', id=new_note.id))
+        if uploaded_file:
+            return redirect(url_for('main.edit_note', id=new_note.id))
+        else:
+            return redirect(url_for('main.view_note', id=new_note.id))
 
     return render_template('create_note.html', form=form)
 
@@ -159,17 +162,13 @@ def get_notes():
     notes = Note.query.filter_by(created_by=current_user.id).all()
     return render_template('notes_list.html', notes=notes)
 
-@main_bp.route('/wikinote',methods=['GET', 'POST'])
+
+@main_bp.route('/wikinote', methods=['GET', 'POST'])
 @login_required
 def get_wikinote():
     form = NoteForm()
     if form.validate_on_submit():
         content = form.content.data
-
-        if form.image.data:
-            extracted_text = ocr_service.extract_text(form.image.data)
-            if extracted_text:
-                content = content + '\n' + extracted_text
 
         new_note = Note(
             title=form.title.data,
@@ -241,6 +240,29 @@ def share_note(id):
 
         db.session.commit()
         flash(f'Note shared with {username}', 'success')
+
+        if note.created_by != current_user.id:
+            notification_creator = Notification(
+                user_id=note.created_by,
+                referenced_user_id=current_user.id,
+                note_id=note.id,
+                title="Your note has been shared!",
+                description=f"@{current_user.username} shared '{note.title}' with @{user.username}.",
+                type="CREATOR_NOTIFIED"
+            )
+            db.session.add(notification_creator)
+
+        notification = Notification(
+            user_id=user.id,
+            referenced_user_id=current_user.id,
+            note_id=note.id,
+            title="Your friend shared a note with you!",
+            description=f"@{current_user.username} shared '{note.title}' with you.",
+            type="SHARED_NOTIFIED"
+        )
+        db.session.add(notification)
+        db.session.commit()
+
         return redirect(request.referrer)
 
     return render_template('share_note.html', form=form, note=note)
@@ -254,8 +276,11 @@ def view_note(id):
     tags_id_for_note = [tag_note.tag_id for tag_note in note.note_tags]
     all_tags_by_user = Tag.query.filter_by(created_by=current_user.id).all()
     tags_for_note_by_user = [tag for tag in all_tags_by_user if tag.id in tags_id_for_note]
+    other_users = [User.query.get_or_404(user_note.user_id) for user_note in note.shared_with]
+    allow_edit = note.created_by == current_user.id
 
-    return render_template('view_note.html', note=note, tags_for_note_by_user=tags_for_note_by_user, all_tags_by_user=all_tags_by_user)
+    return render_template('view_note.html', note=note, tags_for_note_by_user=tags_for_note_by_user,
+                           all_tags_by_user=all_tags_by_user, other_users=other_users, allow_edit=allow_edit)
 
 
 @main_bp.route('/note/delete/<int:id>', methods=['GET', 'POST'])
@@ -271,6 +296,7 @@ def delete_note(id):
         return redirect(url_for('main.index'))
 
     return render_template('delete_note.html', note=note)
+
 
 @main_bp.route('/note/<int:id>/add_tag', methods=['POST'])
 def add_tag_to_note(id):
@@ -292,6 +318,7 @@ def add_tag_to_note(id):
 
     flash(f'Note successfully tagged as {tag_input}.', 'success')
     return redirect(url_for('main.view_note', id=note.id))
+
 
 @main_bp.route('/note/export/<int:id>')
 @login_required
@@ -328,3 +355,33 @@ def export_note_pdf(id):
     response.headers['Content-Disposition'] = f'attachment; filename={note.title}.pdf'
 
     return response
+
+
+@main_bp.route('/notifications')
+@login_required
+def view_notifications():
+    notifications = (Notification.query.
+                     filter_by(user_id=current_user.id, is_read=False).
+                     order_by(desc(Notification.created_at)).all())
+    return jsonify([n.to_dict() for n in notifications])
+
+
+@main_bp.route('/notifications/<int:noti_id>/read', methods=['POST'])
+@login_required
+def mark_notification_read(noti_id):
+    notification = Notification.query.filter_by(id=noti_id, user_id=current_user.id).first()
+
+    if not notification:
+        return jsonify({'error': 'Notification not found'}), 404
+
+    notification.is_read = True
+    db.session.commit()
+
+    return jsonify({'success': True}), 200
+
+
+@main_bp.route('/notifications/unread_count')
+@login_required
+def unread_notification_count():
+    count = Notification.query.filter_by(user_id=current_user.id, is_read=False).count()
+    return jsonify({'count': count})

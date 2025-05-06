@@ -7,22 +7,23 @@
     <title>{% block title %}NoteSync{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/header.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/mynotes.css') }}">
-
 </head>
 <body>
-      <div id='headerWrapper'>
-         <div id='headerLeft'>
-            <img id='logoImg' src="{{ url_for('static',filename='images/logo.png') }}" alt='logo img'/>
-            <a href="{{ url_for('main.get_notes') }}"><div id='headerTitle'>NoteSync</div></a>
-            <div id='myNotes'><a href="{{ url_for('main.get_notes') }}">My Notes</a></div>
-             <div id='sharedNotes'><a href="{{ url_for('main.get_shared_notes') }}">Shared with me</a></div>
-         </div>
-         <div id='headerRight'>
-             <div>Hello, {{ current_user.name }}</div>
-            <img id='notiImg' src="{{ url_for('static',filename='images/noti.png') }}" alt='noti img'/>
-            <a id="headerButton" class="nav-link" href="{{ url_for('auth.logout') }}">Log out</a>
-         </div>
-      </div>
+<div id='headerWrapper'>
+    <div id='headerLeft'>
+        <img id='logoImg' src="{{ url_for('static',filename='images/logo.png') }}" alt='logo img'/>
+        <a href="{{ url_for('main.get_notes') }}">
+            <div id='headerTitle'>NoteSync</div>
+        </a>
+        <div id='myNotes'><a href="{{ url_for('main.get_notes') }}">My Notes</a></div>
+        <div id='sharedNotes'><a href="{{ url_for('main.get_shared_notes') }}">Shared with me</a></div>
+    </div>
+    <div id='headerRight'>
+        <div>Hello, {{ current_user.name }}</div>
+        <img id='notiImg' src="{{ url_for('static',filename='images/noti.png') }}" alt='noti img'/>
+        <a id="headerButton" class="nav-link" href="{{ url_for('auth.logout') }}">Log out</a>
+    </div>
+</div>
 {#header ends#}
 
 {% block content %}
@@ -31,49 +32,51 @@
             <div id='myNotesLabel'>Shared with me</div>
             <div id='myNotesDesc'>Notes from your peers</div>
         </div>
-{#        <a id='newNoteBtn' href="{{ url_for('main.create_note') }}"><span>+&nbsp;</span>New Note</a>#}
+        {#        <a id='newNoteBtn' href="{{ url_for('main.create_note') }}"><span>+&nbsp;</span>New Note</a>#}
     </div>
-     <div id='searchBarRow'>
-            <div id='searchIcon'><img src="{{ url_for('static',filename='images/search.png') }}" alt="search icon" /></div>
-            <input placeholder='Search notes...' type="text" name="searchBar" id="searchBar" />
-{#            <button id='filterBtn'><img src="{{ url_for('static',filename='images/filter.png') }}" alt="filter img" /></button>#}
-     </div>
-        {% if notes %}
-            <div id='myNotesWrapper'>
-                {% for note in notes %}
-                    <a href="{{ url_for('main.view_note', id=note.id) }}">
+    <div id='searchBarRow'>
+        <div id='searchIcon'><img src="{{ url_for('static',filename='images/search.png') }}" alt="search icon"/></div>
+        <input placeholder='Search notes...' type="text" name="searchBar" id="searchBar"/>
+        {#            <button id='filterBtn'><img src="{{ url_for('static',filename='images/filter.png') }}" alt="filter img" /></button>#}
+    </div>
+    {% if notes %}
+        <div id='myNotesWrapper'>
+            {% for note in notes %}
+                <a href="{{ url_for('main.view_note', id=note.id) }}">
                     <div class="noteWrapper">
                         <div class="noteTitle">
                             {{ note.title }}
                         </div>
                         <div class="noteDate">
-                            Last edited: {{note.created_at.strftime('%d-%m-%Y')}}
+                            Last edited: {{ note.created_at.strftime('%d-%m-%Y') }}
                         </div>
                     </div>
-                    </a>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div id="noNotesMsg">
-                <p class="lead">You don't have any shared notes yet.</p>
-            </div>
-        {% endif %}
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div id="noNotesMsg">
+            <p class="lead">You don't have any shared notes yet.</p>
+        </div>
+    {% endif %}
 {% endblock %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-    const searchInput = document.getElementById('searchBar');
-    if (searchInput) {
-        searchInput.addEventListener('input', function () {
-            const query = this.value.trim().toLowerCase();
-            const noteAnchors = document.querySelectorAll('#myNotesWrapper > a');
+        const searchInput = document.getElementById('searchBar');
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const query = this.value.trim().toLowerCase();
+                const noteAnchors = document.querySelectorAll('#myNotesWrapper > a');
 
-            noteAnchors.forEach(anchor => {
-                const title = anchor.querySelector('.noteTitle').textContent.toLowerCase();
-                anchor.style.display = (!query || title.includes(query)) ? 'block' : 'none';
+                noteAnchors.forEach(anchor => {
+                    const title = anchor.querySelector('.noteTitle').textContent.toLowerCase();
+                    anchor.style.display = (!query || title.includes(query)) ? 'block' : 'none';
+                });
             });
-        });
-    }
-});
-    </script>
+        }
+    });
+</script>
+<script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+
 </body>
 </html>

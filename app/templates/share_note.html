@@ -8,46 +8,50 @@
     <title>{% block title %}NoteSync{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/header.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/share.css') }}">
-
 </head>
 <body>
 <div id='headerWrapper'>
-         <div id='headerLeft'>
-            <img id='logoImg' src="{{ url_for('static',filename='images/logo.png') }}" alt='logo img'/>
-            <a href="{{ url_for('main.get_notes') }}"><div id='headerTitle'>NoteSync</div></a>>
-            <div id='myNotes'><a href="{{ url_for('main.get_notes') }}">My Notes</a></div>
-             <div id='sharedNotes'><a href="{{ url_for('main.get_shared_notes') }}">Shared with me</a></div>
-         </div>
-         <div id='headerRight'>
-             <div>Hello, {{ current_user.name }}</div>
-            <img id='notiImg' src="{{ url_for('static',filename='images/noti.png') }}" alt='noti img'/>
-            <a id="headerButton" class="nav-link" href="{{ url_for('auth.logout') }}">Log out</a>
-         </div>
-      </div>
-{% block content %}
-<div id="formWrapper" class="auth-container">
-    <div id="formMsg" >Share Note</div>
-    <div id="sharingTitle">Sharing: {{ note.title }}</div>
-    <form method="POST">
-        {{ form.hidden_tag() }}
-        <div class="mb-3">
-            {#{{ form.user.label(class="form-label") }}#}
-            <div>Share this note with:</div>
-            {{ form.user(class="form-control formInput",placeholder="Enter a username") }}
-            {% if form.user.errors %}
-                <div class="text-danger">
-                    {% for error in form.user.errors %}
-                        <small>{{ error }}</small>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
-        <div id="bottomRow" class="d-grid gap-2 d-md-flex justify-content-md-between">
-            <a id="cancelBtn" href="{{ url_for('main.view_note', id=note.id) }}" class="btn btn-secondary">Cancel</a>
-            <button id="saveBtn" type="submit" class="btn btn-primary">Share Note</button>
-        </div>
-    </form>
+    <div id='headerLeft'>
+        <img id='logoImg' src="{{ url_for('static',filename='images/logo.png') }}" alt='logo img'/>
+        <a href="{{ url_for('main.get_notes') }}">
+            <div id='headerTitle'>NoteSync</div>
+        </a>>
+        <div id='myNotes'><a href="{{ url_for('main.get_notes') }}">My Notes</a></div>
+        <div id='sharedNotes'><a href="{{ url_for('main.get_shared_notes') }}">Shared with me</a></div>
+    </div>
+    <div id='headerRight'>
+        <div>Hello, {{ current_user.name }}</div>
+        <img id='notiImg' src="{{ url_for('static',filename='images/noti.png') }}" alt='noti img'/>
+        <a id="headerButton" class="nav-link" href="{{ url_for('auth.logout') }}">Log out</a>
+    </div>
 </div>
+{% block content %}
+    <div id="formWrapper" class="auth-container">
+        <div id="formMsg">Share Note</div>
+        <div id="sharingTitle">Sharing: {{ note.title }}</div>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                {#{{ form.user.label(class="form-label") }}#}
+                <div>Share this note with:</div>
+                {{ form.user(class="form-control formInput",placeholder="Enter a username") }}
+                {% if form.user.errors %}
+                    <div class="text-danger">
+                        {% for error in form.user.errors %}
+                            <small>{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div id="bottomRow" class="d-grid gap-2 d-md-flex justify-content-md-between">
+                <a id="cancelBtn" href="{{ url_for('main.view_note', id=note.id) }}"
+                   class="btn btn-secondary">Cancel</a>
+                <button id="saveBtn" type="submit" class="btn btn-primary">Share Note</button>
+            </div>
+        </form>
+    </div>
 {% endblock %}
 </body>
+<script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+
 </html>
