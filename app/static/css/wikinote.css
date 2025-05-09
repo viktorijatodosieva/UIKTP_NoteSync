@@ -144,3 +144,12 @@ button:hover{
 #createNoteForm{
     display: none;
 }
+#formWrapper p {
+    display: none;
+    color: #dc3545;
+    background-color: rgb(255 215 219);
+    width: fit-content;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin: 0 0 5px 0;
+}

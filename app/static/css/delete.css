@@ -20,6 +20,10 @@
 .card-title,.card-body,.card{
     min-width: 100%;
 }
+.card{
+    max-width: 600px;
+    max-height: 1000px;
+}
 .card-title{
     font-size: 18px;
     font-weight: 600;
@@ -28,11 +32,12 @@
 }
 .card-body{
     border-radius: 0 0 0 8px;
-    max-height: 200px;
+    max-height: 400px;
     overflow-y: auto;
 }
 .card-text{
     margin-top: 0 !important;
+    word-break: break-word;
 }
 #deleteBtn{
     background-color: #DC2626;

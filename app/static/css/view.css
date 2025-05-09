@@ -90,6 +90,7 @@ a{
 #viewersWrapper{
     display: flex;
     flex-direction: row;
+    max-width: 300px;
     overflow-x: auto;
 }
 
@@ -144,6 +145,9 @@ a{
 }
 .tag{
     padding: 3px 8px;
+    max-height: 35px;
+    overflow-y: hidden;
+    min-width: fit-content;
     border-radius: 8px;
 }
 #tagsWrapper{
@@ -153,5 +157,5 @@ a{
     overflow-x: auto;
 }
 .select2{
-    min-width: 100px;
+    min-width: 120px;
 }

@@ -33,6 +33,7 @@
             <input placeholder="Enter a topic for which you want a note to be generated" class="formInput"
                    id="wikinoteInput" type="text">
         </div>
+        <p>You must enter a topic first!</p>
         <button id="generateWikinote">Search for wiki articles</button>
         <div id="resultsTitle">Results</div>
         <div id="search-results">
@@ -76,52 +77,57 @@
 
     document.getElementById('generateWikinote').addEventListener('click', async () => {
         const query = document.getElementById('wikinoteInput').value;
-        if (!query) return;
+        if (!query){
+            document.querySelector("#formWrapper p").style.display = 'block'
+        }
+        else {
 
-        const response = await fetch('https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch='
-            + encodeURIComponent(query)
-            + '&format=json&origin=*');
-
-
-        if (response.ok) {
-            const data = await response.json();
-            {#console.log(data);#}
-
-            const container = document.getElementById('search-results');
-
-            const resultsTitle = document.getElementById('resultsTitle');
-            resultsTitle.style.display = 'block'
-
-            data.query.search.forEach(item => {
-                const card = document.createElement('div');
-                card.classList.add('card');
-                card.id = item.pageid;
-                const toprow = document.createElement('div');
-                toprow.classList.add('topRow');
-
-                const title = document.createElement('div');
-                title.innerHTML = item.title;
-
-                const snippet = document.createElement('div');
-                snippet.innerHTML = item.snippet;
-
-                const button = document.createElement('button');
-                button.textContent = 'Create';
-                button.classList.add('cardBtn');
-                button.id = item.pageid;
-                button.addEventListener('click', handleButtonClick);
-
-                toprow.appendChild(title);
-                toprow.appendChild(button);
-                card.appendChild(toprow);
-                card.appendChild(snippet);
+            const response = await fetch('https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch='
+                + encodeURIComponent(query)
+                + '&format=json&origin=*');
 
 
-                container.appendChild(card);
-            });
+            if (response.ok) {
+                const data = await response.json();
+                {#console.log(data);#}
 
-        } else {
-            alert('Wikipedia page not found!');
+                const container = document.getElementById('search-results');
+
+                const resultsTitle = document.getElementById('resultsTitle');
+                resultsTitle.style.display = 'block'
+
+                data.query.search.forEach(item => {
+                    const card = document.createElement('div');
+                    card.classList.add('card');
+                    card.id = item.pageid;
+                    const toprow = document.createElement('div');
+                    toprow.classList.add('topRow');
+
+                    const title = document.createElement('div');
+                    title.innerHTML = item.title;
+
+                    const snippet = document.createElement('div');
+                    snippet.innerHTML = item.snippet;
+
+                    const button = document.createElement('button');
+                    button.textContent = 'Create';
+                    button.classList.add('cardBtn');
+                    button.id = item.pageid;
+                    button.addEventListener('click', handleButtonClick);
+
+                    toprow.appendChild(title);
+                    toprow.appendChild(button);
+                    card.appendChild(toprow);
+                    card.appendChild(snippet);
+
+
+                    container.appendChild(card);
+                });
+
+            } else {
+                alert('Wikipedia page not found!');
+            }
+            document.querySelector("#formWrapper p").style.display = 'none'
         }
     });
 
