@@ -340,7 +340,7 @@ def export_note_pdf(id):
     pdf.ln(10)
     pdf.multi_cell(0, 10, clean_content)
 
-    pdf_output = pdf.output(dest='S').encode('latin1')
+    pdf_output = pdf.output(dest='S')
     buffer = BytesIO(pdf_output)
 
     safe_title = re.sub(r'[^a-zA-Z0-9_-]', '_', note.title)
@@ -350,6 +350,7 @@ def export_note_pdf(id):
     response.headers['Content-Disposition'] = f'attachment; filename={safe_title}.pdf'
 
     return response
+
 
 
 @main_bp.route('/notifications')
