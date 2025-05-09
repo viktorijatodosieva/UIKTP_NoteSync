@@ -279,8 +279,6 @@ def view_note(id):
     other_users = [User.query.get_or_404(user_note.user_id) for user_note in note.shared_with]
     allow_edit = int(note.created_by) == int(current_user.id)
 
-    print(f"Note created_by: {note.created_by}, Current user ID: {current_user.id}")
-
     return render_template('view_note.html', note=note, tags_for_note_by_user=tags_for_note_by_user,
                            all_tags_by_user=all_tags_by_user, other_users=other_users, allow_edit=allow_edit)
 
