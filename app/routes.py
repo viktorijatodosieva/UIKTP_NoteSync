@@ -14,6 +14,8 @@ from .middleware import creator_or_shared_required, creator_required
 from datetime import datetime
 from fpdf import FPDF
 from flask import make_response
+import re
+from io import BytesIO
 
 from .services.ocr_service import OCRService
 
@@ -327,16 +329,28 @@ def export_note_pdf(id):
         flash('You do not have permission to export this note.', 'danger')
         return redirect(url_for('main.dashboard'))
 
+    clean_content = re.sub(r'<.*?>', '', note.content)
+
     pdf = FPDF()
+
     pdf.add_page()
-    pdf.set_font('Arial', 'B', 16)
+
+    font_path = 'app/static/fonts/DejaVuSans.ttf'
+    pdf.add_font('DejaVuSans', '', font_path, uni=True)
+
+    pdf.set_font('DejaVuSans', size=12)
+
     pdf.cell(0, 10, note.title, ln=True, align='C')
 
     pdf.ln(10)
-    pdf.set_font('Arial', '', 12)
-    pdf.multi_cell(0, 10, note.content)
 
-    response = make_response(pdf.output(dest='S').encode('latin1'))
+    pdf.multi_cell(0, 10, clean_content)
+
+    buffer = BytesIO()
+    pdf.output(buffer)
+    buffer.seek(0)
+
+    response = make_response(buffer.read())
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = f'attachment; filename={note.title}.pdf'
 
