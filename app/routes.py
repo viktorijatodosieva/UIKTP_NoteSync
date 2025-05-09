@@ -197,7 +197,7 @@ def get_shared_notes():
 
 @main_bp.route('/note/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
-@creator_or_shared_required
+@creator_required
 def edit_note(id):
     note = Note.query.get_or_404(id)
     form = NoteForm()
@@ -299,6 +299,7 @@ def delete_note(id):
 
 
 @main_bp.route('/note/<int:id>/add_tag', methods=['POST'])
+@creator_or_shared_required
 def add_tag_to_note(id):
     note = Note.query.get_or_404(id)
     tag_input = request.form.get('tag')
@@ -322,37 +323,31 @@ def add_tag_to_note(id):
 
 @main_bp.route('/note/export/<int:id>')
 @login_required
+@creator_or_shared_required
 def export_note_pdf(id):
     note = Note.query.get_or_404(id)
 
-    if note.created_by != current_user.id:
-        flash('You do not have permission to export this note.', 'danger')
-        return redirect(url_for('main.dashboard'))
-
-    clean_content = re.sub(r'<.*?>', '', note.content)
+    clean_content = re.sub(r'<.*?>', '', note.content or "")
 
     pdf = FPDF()
-
     pdf.add_page()
 
     font_path = 'app/static/fonts/DejaVuSans.ttf'
     pdf.add_font('DejaVuSans', '', font_path, uni=True)
-
     pdf.set_font('DejaVuSans', size=12)
 
     pdf.cell(0, 10, note.title, ln=True, align='C')
-
     pdf.ln(10)
-
     pdf.multi_cell(0, 10, clean_content)
 
-    buffer = BytesIO()
-    pdf.output(buffer)
-    buffer.seek(0)
+    pdf_output = pdf.output(dest='S').encode('latin1')
+    buffer = BytesIO(pdf_output)
+
+    safe_title = re.sub(r'[^a-zA-Z0-9_-]', '_', note.title)
 
     response = make_response(buffer.read())
     response.headers['Content-Type'] = 'application/pdf'
-    response.headers['Content-Disposition'] = f'attachment; filename={note.title}.pdf'
+    response.headers['Content-Disposition'] = f'attachment; filename={safe_title}.pdf'
 
     return response
 

@@ -41,32 +41,29 @@
                 </div>
             </div>
 
-       {% if allow_edit %}
             <form id="addTagForm" method="POST" action="{{ url_for('main.add_tag_to_note', id=note.id) }}">
                 <div>Add tag</div>
-                    <div style="display: flex; flex-direction: row; gap: 10px">
-                        <select id="tag" name="tag" class="form-select" style="width: 100%">
-                            {% for tag in all_tags_by_user %}
-                                <option value="{{ tag.name }}">{{ tag.name }}</option>
-                            {% endfor %}
-                        </select>
+                <div style="display: flex; flex-direction: row; gap: 10px">
+                    <select id="tag" name="tag" class="form-select" style="width: 100%">
+                        {% for tag in all_tags_by_user %}
+                            <option value="{{ tag.name }}">{{ tag.name }}</option>
+                        {% endfor %}
+                    </select>
                     <button id="addTagBtn" type="submit" class="btn btn-primary">+</button>
-                    </div>
+                </div>
             </form>
-        {% else %}
-        {% endif %}
         </div>
         <div id="noteBtnWrapper">
             {% if allow_edit %}
                 <a href="{{ url_for('main.edit_note', id=note.id) }}">
                     <div id="editBtn">Edit</div>
                 </a>
+                <a href="{{ url_for('main.delete_note', id=note.id) }}">
+                    <div id="deleteBtn">Delete</div>
+                </a>
             {% else %}
                 <div></div>
             {% endif %}
-            <a href="{{ url_for('main.delete_note', id=note.id) }}">
-                <div id="deleteBtn">Delete</div>
-            </a>
         </div>
     </div>
     <div id="noteContentWrapper">
@@ -74,35 +71,36 @@
         <div id="noteContentBottom">
             <div id="collabWrapper">
                 <div style="font-size: 18px; font-weight: bold;">Collaborators:</div>
-                    <div id="collaborators">
-                        <div>Creator: {{ note.user.username }}</div>
-                        <div>Viewers: </div>
-                        <div id="viewersWrapper">
-                            {% if other_users %}
+                <div id="collaborators">
+                    <div>Creator: {{ note.user.username }}</div>
+                    <div>Viewers:</div>
+                    <div id="viewersWrapper">
+                        {% if other_users %}
 
-                                    {% for user in other_users %}
-                                        <div class="viewer">{{ user.username }}</div>
-                                    {% endfor %}
+                            {% for user in other_users %}
+                                <div class="viewer"> {{ user.username }} </div>
+                            {% endfor %}
 
-                            {% else %}
+                        {% else %}
                             <div class="viewer">None</div>
-                            {% endif %}
-                        </div>
+                        {% endif %}
                     </div>
+                </div>
             </div>
             <div id="noteContentButtons">
                 <div id="shareNoteBtn">
-                <a href="{{ url_for('main.share_note', id=note.id) }}">Share note</a>
-            </div>
-            <div id="exportNoteBtn">
-                <a href="{{ url_for('main.export_note_pdf', id=note.id) }}" class="btn btn-outline-secondary btn-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                         class="bi bi-file-earmark-pdf me-1" viewBox="0 0 16 16">
-                        <path d="M5.5 5.5v5h.8V5.5h-.8zm3.4 0v5h.8v-2h.5a1.5 1.5 0 0 0 0-3h-.5zm.8 2h-.5v-2h.5a.5.5 0 0 1 0 1h-.5v1h.5a.5.5 0 0 1 0 1zM2 2a2 2 0 0 1 2-2h4l4 4v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2z"/>
-                    </svg>
-                    Export PDF
-                </a>
-            </div>
+                    <a href="{{ url_for('main.share_note', id=note.id) }}">Share note</a>
+                </div>
+                <div id="exportNoteBtn">
+                    <a href="{{ url_for('main.export_note_pdf', id=note.id) }}"
+                       class="btn btn-outline-secondary btn-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                             class="bi bi-file-earmark-pdf me-1" viewBox="0 0 16 16">
+                            <path d="M5.5 5.5v5h.8V5.5h-.8zm3.4 0v5h.8v-2h.5a1.5 1.5 0 0 0 0-3h-.5zm.8 2h-.5v-2h.5a.5.5 0 0 1 0 1h-.5v1h.5a.5.5 0 0 1 0 1zM2 2a2 2 0 0 1 2-2h4l4 4v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2z"/>
+                        </svg>
+                        Export PDF
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -130,20 +128,22 @@
 {% endblock %}
 <script>
     function getRandomRGB() {
-      const r = Math.floor(Math.random() * 256);
-      const g = Math.floor(Math.random() * 256);
-      const b = Math.floor(Math.random() * 256);
-      return { r, g, b };
+        const r = Math.floor(Math.random() * 256);
+        const g = Math.floor(Math.random() * 256);
+        const b = Math.floor(Math.random() * 256);
+        return {r, g, b};
     }
-    function generateTagColors(){
+
+    function generateTagColors() {
         let tags = document.getElementsByClassName('tag')
 
-        for(let tag of tags){
-            const {r,g,b} = getRandomRGB();
+        for (let tag of tags) {
+            const {r, g, b} = getRandomRGB();
             tag.style.color = `rgb(${r}, ${g}, ${b})`;
             tag.style.backgroundColor = `rgba(${r}, ${g}, ${b},0.15)`;
         }
     }
+
     document.addEventListener('DOMContentLoaded', function () {
         generateTagColors();
 
