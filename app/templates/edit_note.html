@@ -40,18 +40,13 @@
                         {% endfor %}
                     </div>
                 {% endif %}
-            </div>
-            <div class="mb-3">
-                {{ form.content.label(class="form-label") }}
-                {{ form.content(id="contentArea", class="form-control", rows=8) }}
-                {% if form.content.errors %}
-                    <div class="text-danger">
-                        {% for error in form.content.errors %}
-                            <small>{{ error }}</small>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            </div>
+            </div><div class="mb-3">
+        <label for="contentArea" class="form-label">Content</label>
+        <div id="contentArea" class="form-control" contenteditable="true" style="min-height: 200px;">
+            {{ note.content | safe }}
+        </div>
+        <input type="hidden" name="content" id="contentInput">
+    </div>
             <div id="bottomRow">
                 <a id="cancelBtn" href="{{ url_for('main.get_notes') }}">Cancel</a>
                 <button id="saveBtn" type="submit" class="btn btn-primary">Update Note</button>
@@ -63,5 +58,11 @@
 
 </body>
 <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+<script>
+document.querySelector('form').addEventListener('submit', function () {
+    document.getElementById('contentInput').value = document.getElementById('contentArea').innerHTML;
+});
+</script>
+
 
 </html>

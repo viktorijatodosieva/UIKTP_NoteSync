@@ -43,7 +43,7 @@
                     <div class="card-title mb-0">{{ note.title }}</div>
                 </div>
                 <div class="card-body">
-                    <p class="card-text">{{ note.content }}</p>
+                    <p class="card-text">{{ note.content | safe }}</p>
                 </div>
             </div>
 

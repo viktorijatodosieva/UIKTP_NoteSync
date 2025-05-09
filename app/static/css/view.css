@@ -1,6 +1,6 @@
 #topRow{
     height: 100px;
-    margin: 0 10%;
+    margin: 0 auto;
     width: 80%;
     display: flex;
     justify-content: space-between;
@@ -55,7 +55,7 @@ a{
 }
 #noteContentWrapper {
     width: 80%;
-    margin: 0 10%;
+    margin: 0 auto;
     background-color: white;
     border-radius: 16px;
     padding: 1% 2%;

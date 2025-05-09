@@ -89,40 +89,49 @@
 
             if (response.ok) {
                 const data = await response.json();
-                {#console.log(data);#}
+                console.log(data);
 
                 const container = document.getElementById('search-results');
+                container.innerHTML = ""
 
                 const resultsTitle = document.getElementById('resultsTitle');
                 resultsTitle.style.display = 'block'
+                if(data.query.search.length !== 0) {
 
-                data.query.search.forEach(item => {
-                    const card = document.createElement('div');
-                    card.classList.add('card');
-                    card.id = item.pageid;
-                    const toprow = document.createElement('div');
-                    toprow.classList.add('topRow');
+                    data.query.search.forEach(item => {
+                        const card = document.createElement('div');
+                        card.classList.add('card');
+                        card.id = item.pageid;
+                        const toprow = document.createElement('div');
+                        toprow.classList.add('topRow');
 
-                    const title = document.createElement('div');
-                    title.innerHTML = item.title;
+                        const title = document.createElement('div');
+                        title.innerHTML = item.title;
 
-                    const snippet = document.createElement('div');
-                    snippet.innerHTML = item.snippet;
+                        const snippet = document.createElement('div');
+                        snippet.innerHTML = item.snippet;
 
-                    const button = document.createElement('button');
-                    button.textContent = 'Create';
-                    button.classList.add('cardBtn');
-                    button.id = item.pageid;
-                    button.addEventListener('click', handleButtonClick);
+                        const button = document.createElement('button');
+                        button.textContent = 'Create';
+                        button.classList.add('cardBtn');
+                        button.id = item.pageid;
+                        button.addEventListener('click', handleButtonClick);
 
-                    toprow.appendChild(title);
-                    toprow.appendChild(button);
-                    card.appendChild(toprow);
-                    card.appendChild(snippet);
+                        toprow.appendChild(title);
+                        toprow.appendChild(button);
+                        card.appendChild(toprow);
+                        card.appendChild(snippet);
 
 
-                    container.appendChild(card);
-                });
+                        container.appendChild(card);
+
+                    });
+                }
+                else{
+                    const noResults = document.createElement('div')
+                    noResults.innerText = `Wikipedia has no articles on "${query}"`
+                    container.appendChild(noResults)
+                }
 
             } else {
                 alert('Wikipedia page not found!');
