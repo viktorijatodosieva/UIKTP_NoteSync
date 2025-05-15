@@ -32,7 +32,7 @@
         {% for category, message in messages %}
             <div class="alert alert-{{ category }} alert-dismissible fade show">
                 {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <button type="button" data-bs-dismiss="alert"></button>
             </div>
         {% endfor %}
     {% endif %}
@@ -56,9 +56,8 @@
                 {% endif %}
             </div>
             <div id="bottomRow" class="d-grid gap-2 d-md-flex justify-content-md-between">
-                <a id="cancelBtn" href="{{ url_for('main.view_note', id=note.id) }}"
-                   class="btn btn-secondary">Cancel</a>
-                <button id="saveBtn" type="submit" class="btn btn-primary">Share Note</button>
+                <a id="cancelBtn" href="{{ url_for('main.view_note', id=note.id) }}">Cancel</a>
+                <button id="saveBtn" type="submit">Share Note</button>
             </div>
         </form>
     </div>

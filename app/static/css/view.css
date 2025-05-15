@@ -140,6 +140,8 @@ a{
     font-size: 20px;
     background-color: #2563EB;
     border-radius: 4px;
+    line-height: 28px;
+    text-align: center;
     min-width: 28px;
     height: 28px;
 }

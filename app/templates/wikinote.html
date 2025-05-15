@@ -30,7 +30,7 @@
         {% for category, message in messages %}
             <div class="alert alert-{{ category }} alert-dismissible fade show">
                 {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <button type="button" data-bs-dismiss="alert"></button>
             </div>
         {% endfor %}
     {% endif %}
@@ -55,8 +55,8 @@
             {{ form.hidden_tag() }}
             {{ form.title(class="form-control", id="titleInput") }}
             {{ form.content(class="form-control", id="contentInput") }}
-            <div id="cancelBtn"><a href="{{ url_for('main.get_notes') }}" class="btn btn-secondary">Cancel</a></div>
-            <button type="submit" id="realSubmit" class="btn btn-primary">Submit Note</button>
+            <div id="cancelBtn"><a href="{{ url_for('main.get_notes') }}">Cancel</a></div>
+            <button type="submit" id="realSubmit" >Submit Note</button>
         </form>
     </div>
 
